@@ -1,0 +1,15 @@
+{
+  "name": "cheifos-app",
+  "version": "1.0.0",
+  "description": "TimeBack AI - Slack Message Management System",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "cd server && npm install && node server.js",
+    "install": "cd server && npm install"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "TimeBack AI",
+  "license": "MIT"
+}
