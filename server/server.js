@@ -21,9 +21,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const { testSlackConnection } = require('./config/slack');
 const { testConnection: testDbConnection } = require('./config/database');
 
+// Serve static files from public directory
+const path = require('path');
+app.use(express.static(path.join(__dirname, '../public')));
+
 // Routes
 const webhookRouter = require('./routes/webhook');
+const apiRouter = require('./routes/api');
 app.use('/slack', webhookRouter);
+app.use('/api', apiRouter);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -35,17 +41,9 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Root endpoint
+// Root endpoint serves the dashboard
 app.get('/', (req, res) => {
-  res.json({
-    message: 'TimeBack AI Backend API',
-    version: '1.0.0',
-    endpoints: {
-      health: '/health',
-      slack_events: '/slack/events',
-      api: '/api/*'
-    }
-  });
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 // Error handling middleware

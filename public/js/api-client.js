@@ -3,8 +3,8 @@
  * Wrapper for all backend API calls
  */
 
-// API Base URL - change this for production
-const API_BASE = 'https://cheifosapp-production.up.railway.app/api';
+// API Base URL - use relative path (works both locally and on Railway)
+const API_BASE = '/api';
 
 const api = {
   // ===== MESSAGE ENDPOINTS =====
