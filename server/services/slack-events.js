@@ -156,14 +156,17 @@ async function setupEventListeners() {
   }
 
   // Handle all Slack events via Socket Mode
-  socketModeClient.on('slack_event', async ({ event, body, ack }) => {
+  socketModeClient.on('slack_event', async ({ body, ack }) => {
     try {
       // Acknowledge the event immediately
       await ack();
 
-      // The event comes directly in the event parameter for 'slack_event'
+      // Extract the event from the payload
+      const event = body?.payload?.event;
+
       if (!event) {
         console.error('No event found in slack_event payload');
+        console.log('Body structure:', JSON.stringify(body, null, 2));
         return;
       }
 
