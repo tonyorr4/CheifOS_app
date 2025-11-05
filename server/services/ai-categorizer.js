@@ -21,7 +21,7 @@ const anthropic = process.env.ANTHROPIC_API_KEY
 async function categorizeWithAI(message) {
   // Fallback to rule-based if AI not configured
   if (!anthropic) {
-    console.log('   Claude API not configured - using rule-based categorization');
+    console.log('Claude API not configured - using rule-based categorization');
     return categorizeMessage(message.text, message.metadata);
   }
 
@@ -40,7 +40,7 @@ async function categorizeWithAI(message) {
     // Parse AI response
     const result = parseAIResponse(response.content[0].text);
 
-    console.log(` AI categorized message as: ${result.category} (priority: ${result.priority})`);
+    console.log(`AI categorized message as: ${result.category} (priority: ${result.priority})`);
 
     return {
       ...result,
@@ -48,8 +48,8 @@ async function categorizeWithAI(message) {
       aiReasoning: response.content[0].text
     };
   } catch (error) {
-    console.error('L AI categorization failed:', error.message);
-    console.log('   Falling back to rule-based categorization');
+    console.error('AI categorization failed:', error.message);
+    console.log('Falling back to rule-based categorization');
 
     // Fallback to rule-based
     return categorizeMessage(message.text, message.metadata);
@@ -160,7 +160,7 @@ async function generateDraftResponse(message, knowledgeBase = []) {
 
     const draftText = response.content[0].text;
 
-    console.log(` Generated draft response for message ${message.id}`);
+    console.log(`Generated draft response for message ${message.id}`);
 
     return {
       draft: draftText,
@@ -169,7 +169,7 @@ async function generateDraftResponse(message, knowledgeBase = []) {
       kbEntriesUsed: kbMatches.length
     };
   } catch (error) {
-    console.error('L Failed to generate draft response:', error.message);
+    console.error('Failed to generate draft response:', error.message);
     throw error;
   }
 }
