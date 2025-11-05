@@ -8,8 +8,7 @@
 const URGENT_KEYWORDS = [
   'urgent', 'asap', 'emergency', 'critical', 'immediately',
   'down', 'outage', 'broken', 'failed', 'error', 'crash',
-  'help needed', 'red alert', 'production', 'live site',
-  '=¨', ' ', 'W'
+  'help needed', 'red alert', 'production', 'live site'
 ];
 
 // Question patterns and keywords
@@ -24,8 +23,7 @@ const QUESTION_KEYWORDS = [
 const FYI_KEYWORDS = [
   'fyi', 'for your information', 'heads up', 'just so you know',
   'update:', 'status:', 'announcement:', 'notice:',
-  'deployed', 'released', 'completed', 'finished',
-  '', '9', '=â'
+  'deployed', 'released', 'completed', 'finished'
 ];
 
 /**
