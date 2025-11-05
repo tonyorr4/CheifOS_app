@@ -4,7 +4,7 @@
  */
 
 // API Base URL - change this for production
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = 'https://cheifosapp-production.up.railway.app/api';
 
 const api = {
   // ===== MESSAGE ENDPOINTS =====
