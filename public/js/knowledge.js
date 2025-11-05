@@ -9,7 +9,7 @@ let currentEditingId = null;
 
 // Initialize KB page when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log('=Ú Knowledge Base page initializing...');
+  console.log('Knowledge Base page initializing...');
   await init();
 });
 
@@ -20,9 +20,9 @@ async function init() {
   try {
     await loadKnowledge();
     renderKnowledge();
-    console.log(' Knowledge Base initialized successfully');
+    console.log('Knowledge Base initialized successfully');
   } catch (error) {
-    console.error('L Failed to initialize Knowledge Base:', error);
+    console.error('Failed to initialize Knowledge Base:', error);
     showError('Failed to load knowledge base entries. Make sure the backend server is running.');
   }
 }
@@ -33,7 +33,7 @@ async function init() {
 async function loadKnowledge() {
   try {
     knowledgeEntries = await api.getKnowledge();
-    console.log(`=å Loaded ${knowledgeEntries.length} KB entries`);
+    console.log(`Loaded ${knowledgeEntries.length} KB entries`);
   } catch (error) {
     console.error('Error loading knowledge base:', error);
     knowledgeEntries = [];
@@ -72,14 +72,14 @@ function renderEntry(entry) {
           <h3>${escapeHtml(entry.question)}</h3>
         </div>
         <div class="kb-entry-actions">
-          <button class="btn btn-secondary" onclick="editEntry('${entry.id}')"> Edit</button>
-          <button class="btn btn-secondary" onclick="deleteEntry('${entry.id}')">=Ñ Delete</button>
+          <button class="btn btn-secondary" onclick="editEntry('${entry.id}')">Edit</button>
+          <button class="btn btn-secondary" onclick="deleteEntry('${entry.id}')">Delete</button>
         </div>
       </div>
       <div class="kb-answer">${escapeHtml(entry.answer)}</div>
       <div class="kb-meta">
-        <span>=Ê Used ${useCount} time${useCount !== 1 ? 's' : ''}</span>
-        ${keywordsArray.length > 0 ? `<span><÷ Keywords: ${keywordsArray.join(', ')}</span>` : ''}
+        <span>Used ${useCount} time${useCount !== 1 ? 's' : ''}</span>
+        ${keywordsArray.length > 0 ? `<span>Keywords: ${keywordsArray.join(', ')}</span>` : ''}
       </div>
     </div>
   `;
@@ -162,7 +162,7 @@ async function confirmDelete() {
     // Update UI
     renderKnowledge();
 
-    console.log(` KB entry ${currentEditingId} deleted successfully`);
+    console.log(`KB entry ${currentEditingId} deleted successfully`);
     currentEditingId = null;
   } catch (error) {
     console.error('Error deleting KB entry:', error);
@@ -209,7 +209,7 @@ async function saveEntry(event) {
         e.id === currentEditingId ? updated : e
       );
 
-      console.log(` KB entry ${currentEditingId} updated successfully`);
+      console.log(`KB entry ${currentEditingId} updated successfully`);
     } else {
       // Create new entry
       console.log('Creating new KB entry...');
@@ -218,7 +218,7 @@ async function saveEntry(event) {
       // Add to local state
       knowledgeEntries.push(created);
 
-      console.log(` KB entry created successfully with ID ${created.id}`);
+      console.log(`KB entry created successfully with ID ${created.id}`);
     }
 
     // Close modal and refresh display
@@ -255,7 +255,7 @@ function escapeHtml(text) {
  */
 function showError(message) {
   const container = document.getElementById('kb-list');
-  container.innerHTML = `<div class="empty-state" style="color: var(--urgent-text);">  ${escapeHtml(message)}</div>`;
+  container.innerHTML = `<div class="empty-state" style="color: var(--urgent-text);">Warning: ${escapeHtml(message)}</div>`;
 }
 
 // Make functions available globally for onclick handlers
