@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html lang=en>
+<head>
+  <meta charset=UTF-8>
+  <meta name=viewport content=width=device-width, initial-scale=1.0>
+  <title>TimeBack AI - Dashboard</title>
+  <link rel=stylesheet href=css/themes.css>
+  <link rel=stylesheet href=css/styles.css>
+</head>
+<body data-theme="modern">
+
+  <div class="container">
+
+    <!-- HEADER WITH THEME SWITCHER -->
+    <div class="header">
+      <h1>TimeBack AI Dashboard</h1>
+      <div class="header-actions">
+        <a href="knowledge.html" class="kb-link">Knowledge Base</a>
+        <div class="theme-switcher">
+          <label>Theme:</label>
+          <button class="theme-btn active" data-theme="modern">Modern</button>
+          <button class="theme-btn" data-theme="dark">Dark</button>
+          <button class="theme-btn" data-theme="minimal">Minimal</button>
+          <button class="theme-btn" data-theme="vibrant">Vibrant</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS SECTION -->
+    <div class="stats">
+      <h2>Today''s Overview</h2>
+      <div class="stats-grid">
+        <div class="stat-item urgent">
+          <span class="stat-number" id="stat-urgent">0</span>
+          <span class="stat-label">Urgent</span>
+        </div>
+        <div class="stat-item question">
+          <span class="stat-number" id="stat-question">0</span>
+          <span class="stat-label">Questions</span>
+        </div>
+        <div class="stat-item fyi">
+          <span class="stat-number" id="stat-fyi">0</span>
+          <span class="stat-label">FYI</span>
+        </div>
+        <div class="stat-item routine">
+          <span class="stat-number" id="stat-routine">0</span>
+          <span class="stat-label">Routine</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" id="stat-total">0</span>
+          <span class="stat-label">Total</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- URGENT CATEGORY -->
+    <div class="category-section urgent">
+      <div class="category-header">
+        <div class="category-title">
+          <span class="icon">URGENT</span>
+          Urgent
+        </div>
+        <div class="category-count" id="count-urgent">0 messages</div>
+      </div>
+      <div class="messages-container" id="urgent-messages">
+        <div class="loading">Loading urgent messages</div>
+      </div>
+    </div>
+
+    <!-- QUESTIONS CATEGORY -->
+    <div class="category-section question">
+      <div class="category-header">
+        <div class="category-title">
+          <span class="icon">Q</span>
+          Questions
+        </div>
+        <div class="category-count" id="count-question">0 messages</div>
+      </div>
+      <div class="messages-container" id="question-messages">
+        <div class="loading">Loading questions</div>
+      </div>
+    </div>
+
+    <!-- FYI CATEGORY -->
+    <div class="category-section fyi">
+      <div class="category-header">
+        <div class="category-title">
+          <span class="icon">INFO</span>
+          FYI
+        </div>
+        <div class="category-count" id="count-fyi">0 messages</div>
+      </div>
+      <div class="messages-container" id="fyi-messages">
+        <div class="loading">Loading FYI messages</div>
+      </div>
+    </div>
+
+    <!-- ROUTINE CATEGORY -->
+    <div class="category-section routine">
+      <div class="category-header">
+        <div class="category-title">
+          <span class="icon">ROUTINE</span>
+          Routine
+        </div>
+        <div class="category-count" id="count-routine">0 messages</div>
+      </div>
+      <div class="messages-container" id="routine-messages">
+        <div class="loading">Loading routine messages</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DRAFT RESPONSE MODAL -->
+  <div id="draft-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Draft Response</h3>
+        <button class="close-btn" onclick="closeDraftModal()">X</button>
+      </div>
+      <div class="modal-body">
+        <div class="original-message">
+          <h4>Original Message:</h4>
+          <p id="modal-original-text"></p>
+          <small id="modal-message-meta"></small>
+        </div>
+        <div class="draft-section">
+          <h4>AI-Generated Draft Response:</h4>
+          <textarea id="draft-textarea" rows="8" placeholder="Generating draft response..."></textarea>
+          <div class="draft-meta">
+            <span id="draft-confidence"></span>
+            <span id="draft-kb-used"></span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="sendResponse()">Send to Slack</button>
+        <button class="btn btn-secondary" onclick="closeDraftModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load JavaScript -->
+  <script src="js/api-client.js"></script>
+  <script src="js/theme-manager.js"></script>
+  <script src="js/dashboard.js"></script>
+
+</body>
+</html>

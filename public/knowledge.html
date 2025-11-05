@@ -1,0 +1,143 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TimeBack AI - Knowledge Base</title>
+  <link rel="stylesheet" href="css/themes.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .kb-header-actions {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .kb-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .kb-entry {
+      background: var(--bg-secondary);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .kb-entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+    .kb-entry h3 {
+      margin: 0 0 10px 0;
+      color: var(--text-primary);
+    }
+    .kb-entry-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .kb-answer {
+      color: var(--text-primary);
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+    .kb-meta {
+      display: flex;
+      gap: 20px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      flex-wrap: wrap;
+    }
+    .kb-meta span {
+      display: inline-block;
+    }
+    .modal .form-group {
+      margin-bottom: 20px;
+    }
+    .modal label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .modal input[type="text"],
+    .modal textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 14px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+    .modal textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+  </style>
+</head>
+<body data-theme="modern">
+
+  <div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+      <h1>Knowledge Base</h1>
+      <div class="kb-header-actions">
+        <a href="index.html" class="btn btn-secondary">Back to Dashboard</a>
+        <button class="btn btn-primary" onclick="showAddModal()">+ Add Entry</button>
+      </div>
+    </div>
+
+    <!-- KNOWLEDGE BASE LIST -->
+    <div id="kb-list" class="kb-list">
+      <div class="loading">Loading knowledge base entries</div>
+    </div>
+
+  </div>
+
+  <!-- ADD/EDIT MODAL -->
+  <div id="kb-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title">Add Knowledge Base Entry</h3>
+        <button class="close-btn" onclick="closeKBModal()">X</button>
+      </div>
+      <div class="modal-body">
+        <form id="kb-form" onsubmit="saveEntry(event)">
+          <input type="hidden" id="entry-id" value="">
+
+          <div class="form-group">
+            <label for="entry-question">Question:</label>
+            <input type="text" id="entry-question" required placeholder="What question does this answer?">
+          </div>
+
+          <div class="form-group">
+            <label for="entry-answer">Answer:</label>
+            <textarea id="entry-answer" required placeholder="The answer or response template"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="entry-keywords">Keywords (comma-separated):</label>
+            <input type="text" id="entry-keywords" required placeholder="delivery, shipping, tracking">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" form="kb-form">Save</button>
+        <button class="btn btn-secondary" onclick="closeKBModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load JavaScript -->
+  <script src="js/api-client.js"></script>
+  <script src="js/theme-manager.js"></script>
+  <script src="js/knowledge.js"></script>
+
+</body>
+</html>

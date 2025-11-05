@@ -1,0 +1,38 @@
+# Environment variables - NEVER commit credentials!
+.env
+.env.local
+.env.production
+*.env
+
+# Dependencies
+node_modules/
+server/node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Firebase
+firebase-debug.log
+.firebase/
+
+# Temporary files
+*.tmp
+.cache/
+
+# Build outputs (if any)
+dist/
+build/
+nul
+server/nul

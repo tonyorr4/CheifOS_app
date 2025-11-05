@@ -1,0 +1,123 @@
+/* ============================================
+   CSS VARIABLES FOR THEME SWITCHING
+   ============================================ */
+
+/* THEME 1: Modern Clean */
+[data-theme="modern"] {
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #ffffff;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+
+  --urgent-bg: #fff5f5;
+  --urgent-border: #e53e3e;
+  --urgent-text: #c53030;
+
+  --question-bg: #fffbeb;
+  --question-border: #f59e0b;
+  --question-text: #d97706;
+
+  --fyi-bg: #eff6ff;
+  --fyi-border: #3b82f6;
+  --fyi-text: #2563eb;
+
+  --routine-bg: #f9fafb;
+  --routine-border: #9ca3af;
+  --routine-text: #4b5563;
+
+  --btn-primary: #3b82f6;
+  --btn-primary-hover: #2563eb;
+  --btn-secondary: #6b7280;
+  --btn-success: #10b981;
+}
+
+/* THEME 2: Dark Mode */
+[data-theme="dark"] {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --text-primary: #e5e5e5;
+  --text-secondary: #a3a3a3;
+  --border-color: #404040;
+
+  --urgent-bg: #3d1f1f;
+  --urgent-border: #ef4444;
+  --urgent-text: #fca5a5;
+
+  --question-bg: #3d3317;
+  --question-border: #f59e0b;
+  --question-text: #fcd34d;
+
+  --fyi-bg: #1e2a3d;
+  --fyi-border: #60a5fa;
+  --fyi-text: #93c5fd;
+
+  --routine-bg: #262626;
+  --routine-border: #737373;
+  --routine-text: #d4d4d4;
+
+  --btn-primary: #3b82f6;
+  --btn-primary-hover: #60a5fa;
+  --btn-secondary: #6b7280;
+  --btn-success: #10b981;
+}
+
+/* THEME 3: Minimal */
+[data-theme="minimal"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #fafafa;
+  --text-primary: #000000;
+  --text-secondary: #666666;
+  --border-color: #e0e0e0;
+
+  --urgent-bg: #ffffff;
+  --urgent-border: #ff0000;
+  --urgent-text: #ff0000;
+
+  --question-bg: #ffffff;
+  --question-border: #ff9500;
+  --question-text: #ff9500;
+
+  --fyi-bg: #ffffff;
+  --fyi-border: #007aff;
+  --fyi-text: #007aff;
+
+  --routine-bg: #ffffff;
+  --routine-border: #8e8e93;
+  --routine-text: #000000;
+
+  --btn-primary: #007aff;
+  --btn-primary-hover: #0051d5;
+  --btn-secondary: #8e8e93;
+  --btn-success: #34c759;
+}
+
+/* THEME 4: Vibrant */
+[data-theme="vibrant"] {
+  --bg-primary: #fef3c7;
+  --bg-secondary: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border-color: #fbbf24;
+
+  --urgent-bg: #fee2e2;
+  --urgent-border: #dc2626;
+  --urgent-text: #991b1b;
+
+  --question-bg: #fed7aa;
+  --question-border: #ea580c;
+  --question-text: #9a3412;
+
+  --fyi-bg: #dbeafe;
+  --fyi-border: #2563eb;
+  --fyi-text: #1e40af;
+
+  --routine-bg: #e0e7ff;
+  --routine-border: #6366f1;
+  --routine-text: #4338ca;
+
+  --btn-primary: #8b5cf6;
+  --btn-primary-hover: #7c3aed;
+  --btn-secondary: #64748b;
+  --btn-success: #10b981;
+}

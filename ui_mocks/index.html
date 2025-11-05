@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TimeBack AI - Dashboard UI Mock</title>
+  <style>
+    /* ============================================
+       CSS VARIABLES FOR THEME SWITCHING
+       ============================================ */
+    :root {
+      /* Theme variables will be set by JavaScript */
+    }
+
+    /* THEME 1: Modern Clean */
+    [data-theme="modern"] {
+      --bg-primary: #f8f9fa;
+      --bg-secondary: #ffffff;
+      --text-primary: #212529;
+      --text-secondary: #6c757d;
+      --border-color: #dee2e6;
+
+      --urgent-bg: #fff5f5;
+      --urgent-border: #e53e3e;
+      --urgent-text: #c53030;
+
+      --question-bg: #fffbeb;
+      --question-border: #f59e0b;
+      --question-text: #d97706;
+
+      --fyi-bg: #eff6ff;
+      --fyi-border: #3b82f6;
+      --fyi-text: #2563eb;
+
+      --routine-bg: #f9fafb;
+      --routine-border: #9ca3af;
+      --routine-text: #4b5563;
+
+      --btn-primary: #3b82f6;
+      --btn-primary-hover: #2563eb;
+      --btn-secondary: #6b7280;
+      --btn-success: #10b981;
+    }
+
+    /* THEME 2: Dark Mode */
+    [data-theme="dark"] {
+      --bg-primary: #1a1a1a;
+      --bg-secondary: #2d2d2d;
+      --text-primary: #e5e5e5;
+      --text-secondary: #a3a3a3;
+      --border-color: #404040;
+
+      --urgent-bg: #3d1f1f;
+      --urgent-border: #ef4444;
+      --urgent-text: #fca5a5;
+
+      --question-bg: #3d3317;
+      --question-border: #f59e0b;
+      --question-text: #fcd34d;
+
+      --fyi-bg: #1e2a3d;
+      --fyi-border: #60a5fa;
+      --fyi-text: #93c5fd;
+
+      --routine-bg: #262626;
+      --routine-border: #737373;
+      --routine-text: #d4d4d4;
+
+      --btn-primary: #3b82f6;
+      --btn-primary-hover: #60a5fa;
+      --btn-secondary: #6b7280;
+      --btn-success: #10b981;
+    }
+
+    /* THEME 3: Minimal */
+    [data-theme="minimal"] {
+      --bg-primary: #ffffff;
+      --bg-secondary: #fafafa;
+      --text-primary: #000000;
+      --text-secondary: #666666;
+      --border-color: #e0e0e0;
+
+      --urgent-bg: #ffffff;
+      --urgent-border: #ff0000;
+      --urgent-text: #ff0000;
+
+      --question-bg: #ffffff;
+      --question-border: #ff9500;
+      --question-text: #ff9500;
+
+      --fyi-bg: #ffffff;
+      --fyi-border: #007aff;
+      --fyi-text: #007aff;
+
+      --routine-bg: #ffffff;
+      --routine-border: #8e8e93;
+      --routine-text: #000000;
+
+      --btn-primary: #007aff;
+      --btn-primary-hover: #0051d5;
+      --btn-secondary: #8e8e93;
+      --btn-success: #34c759;
+    }
+
+    /* THEME 4: Vibrant */
+    [data-theme="vibrant"] {
+      --bg-primary: #fef3c7;
+      --bg-secondary: #ffffff;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --border-color: #fbbf24;
+
+      --urgent-bg: #fee2e2;
+      --urgent-border: #dc2626;
+      --urgent-text: #991b1b;
+
+      --question-bg: #fed7aa;
+      --question-border: #ea580c;
+      --question-text: #9a3412;
+
+      --fyi-bg: #dbeafe;
+      --fyi-border: #2563eb;
+      --fyi-text: #1e40af;
+
+      --routine-bg: #e0e7ff;
+      --routine-border: #6366f1;
+      --routine-text: #4338ca;
+
+      --btn-primary: #8b5cf6;
+      --btn-primary-hover: #7c3aed;
+      --btn-secondary: #64748b;
+      --btn-success: #10b981;
+    }
+
+    /* ============================================
+       BASE STYLES
+       ============================================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* ============================================
+       HEADER & THEME SWITCHER
+       ============================================ */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .header h1 {
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .theme-switcher {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .theme-switcher label {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .theme-btn {
+      padding: 8px 16px;
+      border: 2px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .theme-btn:hover {
+      border-color: var(--btn-primary);
+      transform: translateY(-2px);
+    }
+
+    .theme-btn.active {
+      background: var(--btn-primary);
+      color: white;
+      border-color: var(--btn-primary);
+    }
+
+    /* ============================================
+       STATS SECTION
+       ============================================ */
+    .stats {
+      background: var(--bg-secondary);
+      padding: 25px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+      margin-top: 15px;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 15px;
+      border-radius: 8px;
+      background: var(--bg-primary);
+    }
+
+    .stat-number {
+      font-size: 36px;
+      font-weight: 700;
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 5px;
+    }
+
+    .stat-item.urgent .stat-number { color: var(--urgent-text); }
+    .stat-item.question .stat-number { color: var(--question-text); }
+    .stat-item.fyi .stat-number { color: var(--fyi-text); }
+    .stat-item.routine .stat-number { color: var(--routine-text); }
+
+    /* ============================================
+       CATEGORY SECTIONS
+       ============================================ */
+    .category-section {
+      margin-bottom: 30px;
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .category-section.urgent {
+      background: var(--urgent-bg);
+      border-left: 6px solid var(--urgent-border);
+    }
+
+    .category-section.question {
+      background: var(--question-bg);
+      border-left: 6px solid var(--question-border);
+    }
+
+    .category-section.fyi {
+      background: var(--fyi-bg);
+      border-left: 6px solid var(--fyi-border);
+    }
+
+    .category-section.routine {
+      background: var(--routine-bg);
+      border-left: 6px solid var(--routine-border);
+    }
+
+    .category-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .category-title {
+      font-size: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .category-title .icon {
+      font-size: 24px;
+    }
+
+    .category-count {
+      background: var(--bg-secondary);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* ============================================
+       MESSAGE CARDS
+       ============================================ */
+    .message {
+      background: var(--bg-secondary);
+      padding: 18px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border-color);
+      transition: all 0.2s ease;
+    }
+
+    .message:hover {
+      transform: translateX(4px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .message-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .message-meta {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .message-user {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .message-channel {
+      color: var(--text-secondary);
+    }
+
+    .message-time {
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .message-text {
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .message-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .btn-primary {
+      background: var(--btn-primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--btn-primary-hover);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    .btn-success {
+      background: var(--btn-success);
+      color: white;
+    }
+
+    /* ============================================
+       EMPTY STATE
+       ============================================ */
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    /* ============================================
+       RESPONSIVE
+       ============================================ */
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 20px;
+        align-items: flex-start;
+      }
+
+      .theme-switcher {
+        flex-wrap: wrap;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .message-actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body data-theme="modern">
+
+  <div class="container">
+
+    <!-- HEADER WITH THEME SWITCHER -->
+    <div class="header">
+      <h1>⏰ TimeBack AI Dashboard</h1>
+      <div class="theme-switcher">
+        <label>Theme:</label>
+        <button class="theme-btn active" data-theme="modern">Modern</button>
+        <button class="theme-btn" data-theme="dark">Dark</button>
+        <button class="theme-btn" data-theme="minimal">Minimal</button>
+        <button class="theme-btn" data-theme="vibrant">Vibrant</button>
+      </div>
+    </div>
+
+    <!-- STATS SECTION -->
+    <div class="stats">
+      <h2>📊 Today's Overview</h2>
+      <div class="stats-grid">
+        <div class="stat-item urgent">
+          <span class="stat-number">3</span>
+          <span class="stat-label">Urgent</span>
+        </div>
+        <div class="stat-item question">
+          <span class="stat-number">12</span>
+          <span class="stat-label">Questions</span>
+        </div>
+        <div class="stat-item fyi">
+          <span class="stat-number">45</span>
+          <span class="stat-label">FYI</span>
+        </div>
+        <div class="stat-item routine">
+          <span class="stat-number">67</span>
+          <span class="stat-label">Routine</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">127</span>
+          <span class="stat-label">Total</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- URGENT CATEGORY -->
+    <div class="category-section urgent">
+      <div class="category-header">
+        <div class="category-title">
+          <span class="icon">🚨</span>
+          Urgent
+        </div>
+        <div class="category-count">3 messages</div>
+      </div>
+
+      <div class="message">
+        <div class="message-header">
+          <div class="message-meta">
+            <span class="message-user">John Smith</span>
+            <span class="message-channel">#operations</span>
+          </div>
+          <span class="message-time">2 minutes ago</span>
+        </div>
+        <div class="message-text">
+          🔥 Server is down in LAX facility - all tracking systems offline. Need immediate help!
+        </div>
+        <div class="message-actions">
+          <button class="btn btn-primary">📝 Draft Response</button>
+          <button class="btn btn-success">✓ Mark Handled</button>
+          <button class="btn btn-secondary">🚩 Flag</button>
+          <button class="btn btn-secondary">💬 View Thread</button>
+        </div>
+      </div>
+
+      <div class="message">
+        <div class="message-header">
+          <div class="message-meta">
+            <span class="message-user">Sarah Johnson</span>
+            <span class="message-channel">#customer-success</span>
+          </div>
+          <span class="message-time">15 minutes ago</span>
+        </div>
+        <div class="message-text">
+          URGENT: Major client (Acme Corp) is threatening to cancel contract due to delivery delays. They want a call today.
+        </div>
+        <div class="message-actions">
+          <button class="btn btn-primary">📝 Draft Response</button>
+          <button class="btn btn-success">✓ Mark Handled</button>
+          <button class="btn btn-secondary">🚩 Flag</button>
+          <button class="btn btn-secondary">💬 View Thread</button>
+        </div>
+      </div>
+
+      <div class="message">
+        <div class="message-header">
+          <div class="message-meta">
+            <span class="message-user">Mike Chen</span>
+            <span class="message-channel">#warehouse-ops</span>
+          </div>
+          <span class="message-time">32 minutes ago</span>
+        </div>
+        <div class="message-text">
+          Critical: Truck broke down with 500 packages. Need backup vehicle ASAP or we'll miss today's deadline.
+        </div>
+        <div class="message-actions">
+          <button class="btn btn-primary">📝 Draft Response</button>
+          <button class="btn btn-success">✓ Mark Handled</button>
+          <button class="btn btn-secondary">🚩 Flag</button>
+          <button class="btn btn-secondary">💬 View Thread</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUESTIONS CATEGORY -->
+    <div class="category-section question">
+      <div class="category-header">
+        <div class="category-title">
+          <span class="icon">❓</span>
+          Questions
+        </div>
+        <div class="category-count">12 messages</div>
+      </div>
+
+      <div class="message">
+        <div class="message-header">
+          <div class="message-meta">
+            <span class="message-user">Emily Rodriguez</span>
+            <span class="message-channel">#sales</span>
+          </div>
+          <span class="message-time">1 hour ago</span>
+        </div>
+        <div class="message-text">
+          What's our current delivery time to Boston? Customer is asking for a quote.
+        </div>
+        <div class="message-actions">
+          <button class="btn btn-primary">📝 Draft Response</button>
+          <button class="btn btn-success">✓ Mark Handled</button>
+          <button class="btn btn-secondary">🚩 Flag</button>
+        </div>
+      </div>
+
+      <div class="message">
+        <div class="message-header">
+          <div class="message-meta">
+            <span class="message-user">David Park</span>
+            <span class="message-channel">#operations</span>
+          </div>
+          <span class="message-time">2 hours ago</span>
+        </div>
+        <div class="message-text">
+          Can you clarify the new overtime policy? Some of the team is confused about the approval process.
+        </div>
+        <div class="message-actions">
+          <button class="btn btn-primary">📝 Draft Response</button>
+          <button class="btn btn-success">✓ Mark Handled</button>
+          <button class="btn btn-secondary">🚩 Flag</button>
+        </div>
+      </div>
+
+      <div class="message">
+        <div class="message-header">
+          <div class="message-meta">
+            <span class="message-user">Lisa Martinez</span>
+            <span class="message-channel">#marketing</span>
+          </div>
+          <span class="message-time">3 hours ago</span>
+        </div>
+        <div class="message-text">
+          Quick question: what's our maximum capacity at the LAX facility? Need it for a campaign we're planning.
+        </div>
+        <div class="message-actions">
+          <button class="btn btn-primary">📝 Draft Response</button>
+          <button class="btn btn-success">✓ Mark Handled</button>
+          <button class="btn btn-secondary">🚩 Flag</button>
+        </div>
+      </div>
+
+      <div class="empty-state">
+        + 9 more questions...
+      </div>
+    </div>
+
+    <!-- FYI CATEGORY -->
+    <div class="category-section fyi">
+      <div class="category-header">
+        <div class="category-title">
+          <span class="icon">ℹ️</span>
+          FYI
+        </div>
+        <div class="category-count">45 messages</div>
+      </div>
+
+      <div class="message">
+        <div class="message-header">
+          <div class="message-meta">
+            <span class="message-user">Tom Anderson</span>
+            <span class="message-channel">#general</span>
+          </div>
+          <span class="message-time">4 hours ago</span>
+        </div>
+        <div class="message-text">
+          FYI: The Q4 metrics report has been uploaded to the shared drive. Take a look when you get a chance.
+        </div>
+        <div class="message-actions">
+          <button class="btn btn-success">✓ Mark Handled</button>
+          <button class="btn btn-secondary">🚩 Flag</button>
+        </div>
+      </div>
+
+      <div class="message">
+        <div class="message-header">
+          <div class="message-meta">
+            <span class="message-user">Jessica Wu</span>
+            <span class="message-channel">#team-updates</span>
+          </div>
+          <span class="message-time">5 hours ago</span>
+        </div>
+        <div class="message-text">
+          Heads up: We're doing facility maintenance this Saturday 8am-12pm. LAX will be operating at reduced capacity.
+        </div>
+        <div class="message-actions">
+          <button class="btn btn-success">✓ Mark Handled</button>
+          <button class="btn btn-secondary">🚩 Flag</button>
+        </div>
+      </div>
+
+      <div class="empty-state">
+        + 43 more FYI messages...
+      </div>
+    </div>
+
+    <!-- ROUTINE CATEGORY -->
+    <div class="category-section routine">
+      <div class="category-header">
+        <div class="category-title">
+          <span class="icon">📋</span>
+          Routine
+        </div>
+        <div class="category-count">67 messages</div>
+      </div>
+
+      <div class="message">
+        <div class="message-header">
+          <div class="message-meta">
+            <span class="message-user">Chris Taylor</span>
+            <span class="message-channel">#random</span>
+          </div>
+          <span class="message-time">6 hours ago</span>
+        </div>
+        <div class="message-text">
+          Coffee run anyone? ☕
+        </div>
+        <div class="message-actions">
+          <button class="btn btn-success">✓ Mark Handled</button>
+          <button class="btn btn-secondary">🚩 Flag</button>
+        </div>
+      </div>
+
+      <div class="message">
+        <div class="message-header">
+          <div class="message-meta">
+            <span class="message-user">Amanda Lee</span>
+            <span class="message-channel">#operations</span>
+          </div>
+          <span class="message-time">7 hours ago</span>
+        </div>
+        <div class="message-text">
+          Daily standup notes are posted in the doc. Nothing blocking today.
+        </div>
+        <div class="message-actions">
+          <button class="btn btn-success">✓ Mark Handled</button>
+          <button class="btn btn-secondary">🚩 Flag</button>
+        </div>
+      </div>
+
+      <div class="empty-state">
+        + 65 more routine messages...
+      </div>
+    </div>
+
+  </div>
+
+  <!-- THEME SWITCHING JAVASCRIPT -->
+  <script>
+    // Theme switcher functionality
+    const themeButtons = document.querySelectorAll('.theme-btn');
+    const body = document.body;
+
+    themeButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const theme = button.getAttribute('data-theme');
+
+        // Update active button
+        themeButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        // Update theme
+        body.setAttribute('data-theme', theme);
+
+        // Save to localStorage
+        localStorage.setItem('timebackTheme', theme);
+      });
+    });
+
+    // Load saved theme on page load
+    const savedTheme = localStorage.getItem('timebackTheme') || 'modern';
+    body.setAttribute('data-theme', savedTheme);
+    document.querySelector(`[data-theme="${savedTheme}"]`).classList.add('active');
+
+    // Demo: Add interaction to buttons (for demo purposes)
+    document.querySelectorAll('.btn').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const action = button.textContent;
+        console.log(`Action clicked: ${action}`);
+        // In real app, this would trigger actual functionality
+      });
+    });
+  </script>
+
+</body>
+</html>
