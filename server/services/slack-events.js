@@ -161,8 +161,8 @@ async function setupEventListeners() {
       // Acknowledge the event immediately
       await ack();
 
-      // Extract the event from the payload
-      const event = body?.payload?.event;
+      // Extract the event from the body (it's at body.event, not body.payload.event)
+      const event = body?.event;
 
       if (!event) {
         console.error('No event found in slack_event payload');
