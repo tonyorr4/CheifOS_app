@@ -1,19 +1,22 @@
 /**
  * Slack API Configuration
- * Initializes Slack Web Client and Events API
+ * Initializes Slack Web Client and Socket Mode
  */
 
 const { WebClient } = require('@slack/web-api');
-const { createEventAdapter } = require('@slack/events-api');
+const { SocketModeClient } = require('@slack/socket-mode');
 
 // Initialize Slack Web API client (only if token is provided)
 const slackClient = process.env.SLACK_BOT_TOKEN
   ? new WebClient(process.env.SLACK_BOT_TOKEN)
   : null;
 
-// Initialize Slack Events API adapter (only if signing secret is provided)
-const slackEvents = process.env.SLACK_SIGNING_SECRET
-  ? createEventAdapter(process.env.SLACK_SIGNING_SECRET)
+// Initialize Socket Mode client (only if app token is provided)
+const socketModeClient = process.env.SLACK_APP_TOKEN && process.env.SLACK_BOT_TOKEN
+  ? new SocketModeClient({
+      appToken: process.env.SLACK_APP_TOKEN,
+      logLevel: process.env.NODE_ENV === 'development' ? 'debug' : 'info'
+    })
   : null;
 
 // Test the Slack connection
@@ -37,6 +40,6 @@ async function testSlackConnection() {
 
 module.exports = {
   slackClient,
-  slackEvents,
+  socketModeClient,
   testSlackConnection
 };

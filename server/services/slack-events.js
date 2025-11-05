@@ -1,9 +1,9 @@
 /**
  * Slack Events Handler
- * Handles all incoming Slack events and processes messages
+ * Handles all incoming Slack events using Socket Mode and processes messages
  */
 
-const { slackClient, slackEvents } = require('../config/slack');
+const { slackClient, socketModeClient } = require('../config/slack');
 const { createMessage } = require('../models/message');
 const { categorizeWithAI } = require('./ai-categorizer');
 
@@ -20,9 +20,9 @@ async function initializeBotUserId() {
   try {
     const authTest = await slackClient.auth.test();
     botUserId = authTest.user_id;
-    console.log(` Bot User ID initialized: ${botUserId}`);
+    console.log(`✅ Bot User ID initialized: ${botUserId}`);
   } catch (error) {
-    console.error('L Failed to get bot user ID:', error);
+    console.error('Failed to get bot user ID:', error);
   }
 }
 
@@ -133,6 +133,7 @@ async function processMessage(event) {
     // Save categorized message to database
     try {
       await createMessage(message);
+      console.log('✅ Message saved to database');
     } catch (dbError) {
       console.error('Failed to save message to database:', dbError.message);
       // Don't throw - we still want to process the event even if DB fails
@@ -146,43 +147,70 @@ async function processMessage(event) {
 }
 
 /**
- * Set up event listeners
+ * Set up event listeners for Socket Mode
  */
-function setupEventListeners() {
-  if (!slackEvents) {
-    console.log('⚠️  Slack Events API not configured - event listeners not set up');
+async function setupEventListeners() {
+  if (!socketModeClient) {
+    console.log('⚠️  Slack Socket Mode not configured - event listeners not set up');
     return;
   }
 
-  // Handle message events
-  slackEvents.on('message', async (event) => {
+  // Handle all Slack events via Socket Mode
+  socketModeClient.on('slack_event', async ({ event, body, ack }) => {
     try {
-      await processMessage(event);
-    } catch (error) {
-      console.error('Error in message event handler:', error);
-    }
-  });
+      // Acknowledge the event immediately
+      await ack();
 
-  // Handle app_mention events (when bot is mentioned)
-  slackEvents.on('app_mention', async (event) => {
-    console.log('=� Bot was mentioned!');
-    try {
-      await processMessage(event);
+      // The event comes directly in the event parameter for 'slack_event'
+      if (!event) {
+        console.error('No event found in slack_event payload');
+        return;
+      }
+
+      console.log(`📡 Received event type: ${event.type}`);
+
+      // Handle message events (includes DMs, channel messages, etc.)
+      if (event.type === 'message') {
+        await processMessage(event);
+      }
+
+      // Handle app_mention events (when bot is mentioned)
+      if (event.type === 'app_mention') {
+        console.log('🔔 Bot was mentioned!');
+        await processMessage(event);
+      }
     } catch (error) {
-      console.error('Error in app_mention event handler:', error);
+      console.error('Error in slack_event handler:', error);
     }
   });
 
   // Handle errors
-  slackEvents.on('error', (error) => {
-    console.error('�  Slack Events API error:', error);
+  socketModeClient.on('error', (error) => {
+    console.error('❌ Slack Socket Mode error:', error);
   });
 
-  console.log(' Slack event listeners set up');
+  // Handle disconnect
+  socketModeClient.on('disconnect', () => {
+    console.log('⚠️  Slack Socket Mode disconnected');
+  });
+
+  // Handle reconnect
+  socketModeClient.on('reconnect', () => {
+    console.log('🔄 Slack Socket Mode reconnecting...');
+  });
+
+  // Start the Socket Mode client
+  try {
+    await socketModeClient.start();
+    console.log('✅ Slack Socket Mode connected and listening for events');
+    console.log('   Listening for: message, app_mention events');
+  } catch (error) {
+    console.error('❌ Failed to start Socket Mode client:', error);
+  }
 }
 
 module.exports = {
-  slackEvents,
+  socketModeClient,
   setupEventListeners,
   processMessage,
   getUserInfo,
