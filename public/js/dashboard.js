@@ -115,6 +115,15 @@ function renderMessage(msg) {
   const isThread = msg.metadata?.isThreadReply || msg.metadata?.thread_ts || false;
   const hasAttachments = msg.metadata?.hasAttachments || false;
 
+  // Debug logging
+  if (isThread) {
+    console.log(`Message ${msg.id} is a thread:`, {
+      isThreadReply: msg.metadata?.isThreadReply,
+      thread_ts: msg.metadata?.thread_ts,
+      metadata: msg.metadata
+    });
+  }
+
   return `
     <div class="message" data-id="${msg.id}">
       <div class="message-header">
