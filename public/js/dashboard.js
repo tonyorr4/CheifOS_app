@@ -128,9 +128,9 @@ function renderMessage(msg) {
       </div>
       <div class="message-text">${formatSlackText(msg.text)}</div>
       <div class="message-actions">
-        ${showDraftButton ? `<button class="btn btn-primary" onclick="openDraftModal('${msg.id}')">✏️ Draft Response</button>` : ''}
-        <button class="btn btn-success" onclick="markHandled('${msg.id}')">✓ Mark Handled</button>
-        <button class="btn btn-secondary" onclick="toggleFlag('${msg.id}')">🚩 ${msg.needsResponse ? 'Unflag' : 'Flag'}</button>
+        ${showDraftButton ? `<button class="btn btn-primary" onclick="openDraftModal('${msg.id}')" title="Generate an AI-powered draft response for this message">✏️ Draft Response</button>` : ''}
+        <button class="btn btn-success" onclick="markHandled('${msg.id}')" title="Mark this message as handled - it will be removed from your active queue">✓ Mark Handled</button>
+        <button class="btn btn-secondary" onclick="toggleFlag('${msg.id}')" title="${msg.needsResponse ? 'Remove flag - this message does not need a response' : 'Flag this message as needing a response'}">🚩 ${msg.needsResponse ? 'Unflag' : 'Flag'}</button>
       </div>
     </div>
   `;
