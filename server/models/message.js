@@ -71,25 +71,30 @@ async function getMessages(filters = {}) {
       query = query.where('needsResponse', '==', filters.needsResponse);
     }
 
-    // Filter out deleted messages by default (unless explicitly requested)
-    if (filters.includeDeleted !== true) {
-      query = query.where('deleted', '==', false);
-    }
-
     // Order by timestamp descending (newest first)
     query = query.orderBy('timestamp', 'desc');
 
-    // Apply limit
+    // Apply limit (fetch more to account for deleted messages we'll filter out)
     if (filters.limit) {
-      query = query.limit(parseInt(filters.limit));
+      query = query.limit(parseInt(filters.limit) * 2);
     }
 
     const snapshot = await query.get();
-    const messages = [];
+    let messages = [];
 
     snapshot.forEach(doc => {
       messages.push(doc.data());
     });
+
+    // Filter out deleted messages in-memory (avoids needing composite index)
+    if (filters.includeDeleted !== true) {
+      messages = messages.filter(m => !m.deleted);
+    }
+
+    // Apply limit after filtering
+    if (filters.limit && messages.length > filters.limit) {
+      messages = messages.slice(0, parseInt(filters.limit));
+    }
 
     return messages;
   } catch (error) {
