@@ -359,7 +359,51 @@ function escapeHtml(text) {
 }
 
 /**
- * Format Slack message text (convert mentions, links, etc.)
+ * Common Slack emoji mappings to Unicode
+ */
+const emojiMap = {
+  'thinking_face': '🤔', 'thumbsup': '👍', 'thumbsdown': '👎', '+1': '👍', '-1': '👎',
+  'smile': '😄', 'laughing': '😆', 'blush': '😊', 'smiley': '😃', 'relaxed': '☺️',
+  'smirk': '😏', 'heart_eyes': '😍', 'kissing_heart': '😘', 'flushed': '😳',
+  'grin': '😁', 'wink': '😉', 'stuck_out_tongue_winking_eye': '😜',
+  'stuck_out_tongue': '😛', 'sleeping': '😴', 'worried': '😟', 'frowning': '😦',
+  'anguished': '😧', 'open_mouth': '😮', 'grimacing': '😬', 'confused': '😕',
+  'hushed': '😯', 'expressionless': '😑', 'unamused': '😒', 'sweat_smile': '😅',
+  'sweat': '😓', 'disappointed_relieved': '😥', 'weary': '😩', 'pensive': '😔',
+  'disappointed': '😞', 'confounded': '😖', 'fearful': '😨', 'cold_sweat': '😰',
+  'persevere': '😣', 'cry': '😢', 'sob': '😭', 'joy': '😂', 'astonished': '😲',
+  'scream': '😱', 'tired_face': '😫', 'angry': '😠', 'rage': '😡', 'triumph': '😤',
+  'sleepy': '😪', 'yum': '😋', 'mask': '😷', 'sunglasses': '😎', 'dizzy_face': '😵',
+  'imp': '👿', 'neutral_face': '😐', 'no_mouth': '😶', 'innocent': '😇',
+  'alien': '👽', 'yellow_heart': '💛', 'blue_heart': '💙', 'purple_heart': '💜',
+  'heart': '❤️', 'green_heart': '💚', 'broken_heart': '💔', 'heartbeat': '💓',
+  'heartpulse': '💗', 'two_hearts': '💕', 'revolving_hearts': '💞',
+  'cupid': '💘', 'sparkling_heart': '💖', 'sparkles': '✨', 'star': '⭐',
+  'star2': '🌟', 'dizzy': '💫', 'boom': '💥', 'collision': '💥', 'anger': '💢',
+  'exclamation': '❗', 'question': '❓', 'grey_exclamation': '❕',
+  'grey_question': '❔', 'zzz': '💤', 'dash': '💨', 'sweat_drops': '💦',
+  'notes': '🎶', 'musical_note': '🎵', 'fire': '🔥', 'hankey': '💩', 'poop': '💩',
+  'shit': '💩', 'ok_hand': '👌', 'wave': '👋', 'raised_hand': '✋',
+  'point_up': '☝️', 'point_down': '👇', 'point_left': '👈', 'point_right': '👉',
+  'raised_hands': '🙌', 'pray': '🙏', 'clap': '👏', 'muscle': '💪', 'metal': '🤘',
+  'eyes': '👀', 'see_no_evil': '🙈', 'hear_no_evil': '🙉', 'speak_no_evil': '🙊',
+  'runner': '🏃', 'dancer': '💃', 'walking': '🚶', 'man': '👨', 'woman': '👩',
+  'family': '👪', 'couple': '👫', 'cop': '👮', 'bride_with_veil': '👰',
+  'checkmark': '✔️', 'x': '❌', 'white_check_mark': '✅', 'ballot_box_with_check': '☑️',
+  'heavy_check_mark': '✔️', 'heavy_multiplication_x': '✖️', 'warning': '⚠️',
+  'bell': '🔔', 'no_bell': '🔕', 'arrow_up': '⬆️', 'arrow_down': '⬇️',
+  'arrow_left': '⬅️', 'arrow_right': '➡️', 'email': '📧', 'link': '🔗',
+  'pushpin': '📌', 'pencil': '📝', 'memo': '📝', 'calendar': '📅', 'date': '📅',
+  'clock': '🕐', 'tada': '🎉', 'gift': '🎁', 'balloon': '🎈', 'trophy': '🏆',
+  'medal': '🏅', 'rocket': '🚀', 'airplane': '✈️', 'hourglass': '⌛',
+  'lock': '🔒', 'unlock': '🔓', 'key': '🔑', 'mag': '🔍', 'bulb': '💡',
+  'computer': '💻', 'iphone': '📱', 'calling': '📲', 'phone': '☎️', 'telephone': '☎️',
+  'art': '🎨', 'moneybag': '💰', 'dollar': '💵', 'chart_with_upwards_trend': '📈',
+  'chart_with_downwards_trend': '📉', 'file_folder': '📁', 'open_file_folder': '📂'
+};
+
+/**
+ * Format Slack message text (convert mentions, links, emojis, etc.)
  * @param {string} text - Message text (already has resolved usernames from backend)
  * @returns {string} Formatted text
  */
@@ -370,6 +414,11 @@ function formatSlackText(text) {
 
   // Note: User mentions are already resolved by backend to @username format
   // We just need to handle any remaining Slack formatting
+
+  // Convert Slack emojis :emoji_name: to Unicode emojis
+  formatted = formatted.replace(/:([a-z0-9_+-]+):/g, (match, emojiName) => {
+    return emojiMap[emojiName] || match;
+  });
 
   // Convert channel mentions <#C12345|channel-name> to #channel-name (if any remain)
   formatted = formatted.replace(/&lt;#[A-Z0-9]+\|([^&]+)&gt;/g, '#$1');
