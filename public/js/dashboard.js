@@ -26,7 +26,7 @@ async function init() {
     // Start auto-refresh (every 10 seconds)
     startAutoRefresh();
 
-    console.log(' Dashboard initialized successfully');
+    console.log(' Dashboard initialized successfully');
   } catch (error) {
     console.error('L Failed to initialize dashboard:', error);
     showError('Failed to load messages. Make sure the backend server is running on http://localhost:3000');
@@ -122,11 +122,11 @@ function renderMessage(msg) {
         </div>
         <span class="message-time">${formatTime(msg.timestamp)}</span>
       </div>
-      <div class="message-text">${escapeHtml(msg.text)}</div>
+      <div class="message-text">${formatSlackText(msg.text)}</div>
       <div class="message-actions">
-        ${showDraftButton ? `<button class="btn btn-primary" onclick="openDraftModal('${msg.id}')">=� Draft Response</button>` : ''}
-        <button class="btn btn-success" onclick="markHandled('${msg.id}')"> Mark Handled</button>
-        <button class="btn btn-secondary" onclick="toggleFlag('${msg.id}')">=� ${msg.needsResponse ? 'Unflag' : 'Flag'}</button>
+        ${showDraftButton ? `<button class="btn btn-primary" onclick="openDraftModal('${msg.id}')">✏️ Draft Response</button>` : ''}
+        <button class="btn btn-success" onclick="markHandled('${msg.id}')">✓ Mark Handled</button>
+        <button class="btn btn-secondary" onclick="toggleFlag('${msg.id}')">🚩 ${msg.needsResponse ? 'Unflag' : 'Flag'}</button>
       </div>
     </div>
   `;
@@ -150,7 +150,7 @@ async function markHandled(messageId) {
     updateStats();
     renderAllMessages();
 
-    console.log(` Message ${messageId} marked as handled`);
+    console.log(` Message ${messageId} marked as handled`);
   } catch (error) {
     console.error('Error marking message as handled:', error);
     alert('Failed to mark message as handled. Please try again.');
@@ -174,7 +174,7 @@ async function toggleFlag(messageId) {
     // Update UI
     renderAllMessages();
 
-    console.log(` Flag toggled on message ${messageId}`);
+    console.log(` Flag toggled on message ${messageId}`);
   } catch (error) {
     console.error('Error toggling flag:', error);
     alert('Failed to toggle flag. Please try again.');
@@ -281,13 +281,13 @@ function startAutoRefresh() {
 
   // Refresh every 10 seconds
   autoRefreshInterval = setInterval(async () => {
-    console.log('= Auto-refreshing messages...');
+    console.log('= Auto-refreshing messages...');
     await loadMessages();
     updateStats();
     renderAllMessages();
   }, 10000);
 
-  console.log('= Auto-refresh enabled (every 10 seconds)');
+  console.log('= Auto-refresh enabled (every 10 seconds)');
 }
 
 /**
@@ -329,6 +329,31 @@ function escapeHtml(text) {
 }
 
 /**
+ * Format Slack message text (convert mentions, links, etc.)
+ * @param {string} text - Raw Slack message text
+ * @returns {string} Formatted text
+ */
+function formatSlackText(text) {
+  if (!text) return '';
+
+  let formatted = escapeHtml(text);
+
+  // Convert user mentions <@U12345> to @User
+  formatted = formatted.replace(/&lt;@([A-Z0-9]+)&gt;/g, '@User');
+
+  // Convert channel mentions <#C12345|channel-name> to #channel-name
+  formatted = formatted.replace(/&lt;#[A-Z0-9]+\|([^&]+)&gt;/g, '#$1');
+
+  // Convert links <http://example.com|Example> to Example
+  formatted = formatted.replace(/&lt;(https?:\/\/[^|&]+)\|([^&]+)&gt;/g, '<a href="$1" target="_blank">$2</a>');
+
+  // Convert bare links <http://example.com> to clickable links
+  formatted = formatted.replace(/&lt;(https?:\/\/[^&]+)&gt;/g, '<a href="$1" target="_blank">$1</a>');
+
+  return formatted;
+}
+
+/**
  * Show error message
  * @param {string} message - Error message
  */
@@ -336,7 +361,7 @@ function showError(message) {
   const containers = ['urgent-messages', 'question-messages', 'fyi-messages', 'routine-messages'];
   containers.forEach(id => {
     const container = document.getElementById(id);
-    container.innerHTML = `<div class="empty-state" style="color: var(--urgent-text);">� ${escapeHtml(message)}</div>`;
+    container.innerHTML = `<div class="empty-state" style="color: var(--urgent-text);">� ${escapeHtml(message)}</div>`;
   });
 }
 
