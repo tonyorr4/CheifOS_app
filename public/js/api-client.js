@@ -111,6 +111,34 @@ const api = {
   },
 
   /**
+   * Recategorize a message
+   * @param {string} messageId - Message ID
+   * @param {string} category - New category (urgent, question, fyi, routine)
+   * @returns {Promise<Object>} Updated message
+   */
+  async recategorizeMessage(messageId, category) {
+    try {
+      const response = await fetch(`${API_BASE}/messages/${messageId}/recategorize`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ category })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.data;
+    } catch (error) {
+      console.error('Error recategorizing message:', error);
+      throw error;
+    }
+  },
+
+  /**
    * Get message statistics
    * @returns {Promise<Object>} Stats object with counts
    */

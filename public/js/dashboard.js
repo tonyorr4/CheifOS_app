@@ -131,6 +131,7 @@ function renderMessage(msg) {
         ${showDraftButton ? `<button class="btn btn-primary" onclick="openDraftModal('${msg.id}')" title="Generate an AI-powered draft response for this message">✏️ Draft Response</button>` : ''}
         <button class="btn btn-success" onclick="markHandled('${msg.id}')" title="Mark this message as handled - it will be removed from your active queue">✓ Mark Handled</button>
         <button class="btn btn-secondary" onclick="toggleFlag('${msg.id}')" title="${msg.needsResponse ? 'Remove flag - this message does not need a response' : 'Flag this message as needing a response'}">🚩 ${msg.needsResponse ? 'Unflag' : 'Flag'}</button>
+        <button class="btn btn-warning" onclick="openRecategorizeModal('${msg.id}', '${msg.category}')" title="Manually change the category if AI got it wrong">🔄 Re-categorize</button>
       </div>
     </div>
   `;
@@ -369,9 +370,62 @@ function showError(message) {
   });
 }
 
+/**
+ * Open recategorize modal to change message category
+ * @param {string} messageId - Message ID
+ * @param {string} currentCategory - Current category
+ */
+function openRecategorizeModal(messageId, currentCategory) {
+  const newCategory = prompt(
+    `Current category: ${currentCategory}\n\nChoose new category:\n- urgent\n- question\n- fyi\n- routine`,
+    currentCategory
+  );
+
+  if (!newCategory || newCategory === currentCategory) {
+    return;
+  }
+
+  const validCategories = ['urgent', 'question', 'fyi', 'routine'];
+  if (!validCategories.includes(newCategory.toLowerCase())) {
+    alert('Invalid category. Please choose: urgent, question, fyi, or routine');
+    return;
+  }
+
+  recategorizeMessage(messageId, newCategory.toLowerCase());
+}
+
+/**
+ * Recategorize a message
+ * @param {string} messageId - Message ID
+ * @param {string} category - New category
+ */
+async function recategorizeMessage(messageId, category) {
+  try {
+    console.log(`Recategorizing message ${messageId} to ${category}...`);
+    const updatedMessage = await api.recategorizeMessage(messageId, category);
+
+    // Update message in local state
+    messages = messages.map(m =>
+      m.id === messageId ? updatedMessage : m
+    );
+
+    // Update UI
+    updateStats();
+    renderAllMessages();
+
+    console.log(`✓ Message ${messageId} recategorized to ${category}`);
+    alert(`Message moved to ${category} category`);
+  } catch (error) {
+    console.error('Error recategorizing message:', error);
+    alert('Failed to recategorize message. Please try again.');
+  }
+}
+
 // Make functions available globally for onclick handlers
 window.markHandled = markHandled;
 window.toggleFlag = toggleFlag;
 window.openDraftModal = openDraftModal;
 window.closeDraftModal = closeDraftModal;
 window.sendResponse = sendResponse;
+window.openRecategorizeModal = openRecategorizeModal;
+window.recategorizeMessage = recategorizeMessage;

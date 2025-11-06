@@ -143,6 +143,53 @@ router.patch('/messages/:id/flag', async (req, res) => {
 });
 
 /**
+ * PATCH /api/messages/:id/recategorize
+ * Manually recategorize a message
+ */
+router.patch('/messages/:id/recategorize', async (req, res) => {
+  try {
+    const { category } = req.body;
+
+    // Validate category
+    const validCategories = ['urgent', 'question', 'fyi', 'routine'];
+    if (!category || !validCategories.includes(category)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid category. Must be one of: urgent, question, fyi, routine'
+      });
+    }
+
+    const currentMessage = await messageModel.getMessageById(req.params.id);
+    if (!currentMessage) {
+      return res.status(404).json({
+        success: false,
+        error: 'Message not found'
+      });
+    }
+
+    // Update the category and track that it was manually corrected
+    const message = await messageModel.updateMessage(req.params.id, {
+      category: category,
+      manuallyCategorized: true,
+      originalAiCategory: currentMessage.aiCategory || currentMessage.category
+    });
+
+    res.json({
+      success: true,
+      message: 'Message recategorized successfully',
+      data: message
+    });
+  } catch (error) {
+    console.error(`PATCH /api/messages/${req.params.id}/recategorize error:`, error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to recategorize message',
+      message: error.message
+    });
+  }
+});
+
+/**
  * GET /api/stats
  * Get message statistics
  */
