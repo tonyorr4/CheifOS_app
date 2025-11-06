@@ -154,6 +154,22 @@ async function processMessage(event) {
     const { resolvedText, userMap } = await resolveUserMentions(messageText);
     const mentionedUserIds = extractUserIds(messageText);
 
+    // Extract file information if present
+    let files = [];
+    if (event.files && event.files.length > 0) {
+      files = event.files.map(file => ({
+        id: file.id,
+        name: file.name || file.title || 'Untitled',
+        title: file.title || file.name || 'Untitled',
+        mimetype: file.mimetype || 'unknown',
+        filetype: file.filetype || 'unknown',
+        size: file.size || 0,
+        url: file.url_private || file.permalink || null,
+        downloadUrl: file.url_private_download || file.url_private || null,
+        permalink: file.permalink || null
+      }));
+    }
+
     // Create message object
     const message = {
       id: event.ts, // Slack timestamp is unique identifier
@@ -166,7 +182,8 @@ async function processMessage(event) {
         thread_ts: event.thread_ts || null,
         parent_user_id: event.parent_user_id || null,
         isThreadReply: !!event.thread_ts,
-        hasAttachments: (event.files && event.files.length > 0) || false,
+        hasAttachments: files.length > 0,
+        files: files,  // Store extracted file metadata
         mentionsUser: messageText && messageText.includes(`<@${botUserId}>`),
         mentionedUsers: userMap,  // Store map of mentioned user IDs to names
         mentionedUserIds: mentionedUserIds,  // Store array of user IDs mentioned

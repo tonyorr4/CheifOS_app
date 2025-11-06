@@ -114,6 +114,7 @@ function renderMessage(msg) {
   const showDraftButton = msg.category === 'urgent' || msg.category === 'question';
   const isThread = msg.metadata?.isThreadReply || msg.metadata?.thread_ts || false;
   const hasAttachments = msg.metadata?.hasAttachments || false;
+  const files = msg.metadata?.files || [];
 
   // Debug logging
   if (isThread) {
@@ -122,6 +123,32 @@ function renderMessage(msg) {
       thread_ts: msg.metadata?.thread_ts,
       metadata: msg.metadata
     });
+  }
+
+  // Render file attachments if present
+  let filesHtml = '';
+  if (files.length > 0) {
+    filesHtml = `
+      <div class="message-attachments">
+        <div class="attachments-header">📎 ${files.length} Attachment${files.length > 1 ? 's' : ''}</div>
+        <div class="attachments-list">
+          ${files.map(file => `
+            <div class="attachment-item">
+              <div class="attachment-icon">${getFileIcon(file.filetype)}</div>
+              <div class="attachment-info">
+                <a href="${escapeHtml(file.downloadUrl || file.url)}" target="_blank" class="attachment-name" title="Click to download">
+                  ${escapeHtml(file.name)}
+                </a>
+                <div class="attachment-meta">
+                  <span class="attachment-type">${escapeHtml(file.filetype.toUpperCase())}</span>
+                  <span class="attachment-size">${formatFileSize(file.size)}</span>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
   }
 
   const html = `
@@ -136,6 +163,7 @@ function renderMessage(msg) {
         <span class="message-time">${formatTime(msg.timestamp)}</span>
       </div>
       <div class="message-text">${formatSlackText(msg.text)}</div>
+      ${filesHtml}
       ${isThread ? `<div id="thread-${msg.id}" class="thread-container" style="display: none;"></div>` : ''}
       <div class="message-actions">
         ${isThread ? `<button class="btn btn-info" data-message-id="${msg.id}" onclick="toggleThread(this.getAttribute('data-message-id'))" title="View full thread conversation">🧵 View Thread</button>` : ''}
@@ -374,6 +402,41 @@ function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+/**
+ * Format file size in human-readable format
+ * @param {number} bytes - File size in bytes
+ * @returns {string} Formatted file size
+ */
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+}
+
+/**
+ * Get icon emoji for file type
+ * @param {string} filetype - File type (e.g., 'pdf', 'jpg', 'png')
+ * @returns {string} Icon emoji
+ */
+function getFileIcon(filetype) {
+  const iconMap = {
+    'pdf': '📄',
+    'doc': '📝', 'docx': '📝',
+    'xls': '📊', 'xlsx': '📊', 'csv': '📊',
+    'ppt': '📊', 'pptx': '📊',
+    'jpg': '🖼️', 'jpeg': '🖼️', 'png': '🖼️', 'gif': '🖼️', 'bmp': '🖼️', 'svg': '🖼️',
+    'mp4': '🎥', 'mov': '🎥', 'avi': '🎥', 'mkv': '🎥',
+    'mp3': '🎵', 'wav': '🎵', 'flac': '🎵',
+    'zip': '🗜️', 'rar': '🗜️', '7z': '🗜️', 'tar': '🗜️', 'gz': '🗜️',
+    'txt': '📄', 'md': '📄',
+    'js': '💻', 'py': '💻', 'java': '💻', 'cpp': '💻', 'c': '💻', 'html': '💻', 'css': '💻',
+    'json': '📋', 'xml': '📋', 'yaml': '📋', 'yml': '📋'
+  };
+  return iconMap[filetype.toLowerCase()] || '📎';
 }
 
 /**
