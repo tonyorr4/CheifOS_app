@@ -297,11 +297,36 @@ function startAutoRefresh() {
 
 /**
  * Format timestamp as relative time
- * @param {string|Date} timestamp - Message timestamp
+ * @param {string|Date|Object} timestamp - Message timestamp
  * @returns {string} Formatted relative time
  */
 function formatTime(timestamp) {
-  const date = new Date(timestamp);
+  // Handle Firestore Timestamp objects (have _seconds or seconds property)
+  let date;
+  if (timestamp && typeof timestamp === 'object') {
+    if (timestamp._seconds !== undefined) {
+      // Firestore Timestamp with _seconds and _nanoseconds
+      date = new Date(timestamp._seconds * 1000);
+    } else if (timestamp.seconds !== undefined) {
+      // Firestore Timestamp with seconds and nanoseconds
+      date = new Date(timestamp.seconds * 1000);
+    } else if (timestamp.toDate) {
+      // Firestore Timestamp with toDate() method
+      date = timestamp.toDate();
+    } else {
+      // Try to parse as regular object
+      date = new Date(timestamp);
+    }
+  } else {
+    // String or Date
+    date = new Date(timestamp);
+  }
+
+  // Check if date is valid
+  if (isNaN(date.getTime())) {
+    return 'Unknown time';
+  }
+
   const now = new Date();
   const diffMs = now - date;
   const diffMins = Math.floor(diffMs / 60000);
