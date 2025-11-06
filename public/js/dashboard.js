@@ -124,7 +124,7 @@ function renderMessage(msg) {
     });
   }
 
-  return `
+  const html = `
     <div class="message" data-id="${msg.id}">
       <div class="message-header">
         <div class="message-meta">
@@ -138,7 +138,7 @@ function renderMessage(msg) {
       <div class="message-text">${formatSlackText(msg.text)}</div>
       ${isThread ? `<div id="thread-${msg.id}" class="thread-container" style="display: none;"></div>` : ''}
       <div class="message-actions">
-        ${isThread ? `<button class="btn btn-info" onclick="toggleThread('${msg.id}')" title="View full thread conversation">🧵 View Thread</button>` : ''}
+        ${isThread ? `<button class="btn btn-info" data-message-id="${msg.id}" onclick="toggleThread(this.getAttribute('data-message-id'))" title="View full thread conversation">🧵 View Thread</button>` : ''}
         ${showDraftButton ? `<button class="btn btn-primary" onclick="openDraftModal('${msg.id}')" title="Generate an AI-powered draft response for this message">✏️ Draft Response</button>` : ''}
         <button class="btn btn-success" onclick="markHandled('${msg.id}')" title="Mark this message as handled - it will be removed from your active queue">✓ Mark Handled</button>
         <button class="btn btn-secondary" onclick="toggleFlag('${msg.id}')" title="${msg.needsResponse ? 'Remove flag - this message does not need a response' : 'Flag this message as needing a response'}">🚩 ${msg.needsResponse ? 'Unflag' : 'Flag'}</button>
@@ -146,6 +146,13 @@ function renderMessage(msg) {
       </div>
     </div>
   `;
+
+  // Debug: Log if button should be in HTML
+  if (isThread && !html.includes('btn-info')) {
+    console.error(`Button missing for thread message ${msg.id}!`, html.substring(0, 200));
+  }
+
+  return html;
 }
 
 /**
