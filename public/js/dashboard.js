@@ -112,6 +112,8 @@ function renderCategory(category) {
  */
 function renderMessage(msg) {
   const showDraftButton = msg.category === 'urgent' || msg.category === 'question';
+  const isThread = msg.metadata?.isThreadReply || false;
+  const hasAttachments = msg.metadata?.hasAttachments || false;
 
   return `
     <div class="message" data-id="${msg.id}">
@@ -119,6 +121,8 @@ function renderMessage(msg) {
         <div class="message-meta">
           <span class="message-user">${escapeHtml(msg.user?.name || 'Unknown User')}</span>
           <span class="message-channel">#${escapeHtml(msg.channel?.name || 'unknown')}</span>
+          ${isThread ? '<span class="thread-indicator" title="Thread reply">🧵</span>' : ''}
+          ${hasAttachments ? '<span class="attachment-indicator" title="Has attachments">📎</span>' : ''}
         </div>
         <span class="message-time">${formatTime(msg.timestamp)}</span>
       </div>

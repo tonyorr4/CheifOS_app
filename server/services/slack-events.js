@@ -83,8 +83,16 @@ async function processMessage(event) {
     return;
   }
 
-  // Ignore message edits and deletions (for now)
-  if (event.subtype) {
+  // Only ignore specific subtypes we don't want
+  const ignoredSubtypes = [
+    'message_deleted',
+    'message_changed',
+    'bot_message',
+    'channel_join',
+    'channel_leave'
+  ];
+
+  if (event.subtype && ignoredSubtypes.includes(event.subtype)) {
     console.log(`Ignoring message subtype: ${event.subtype}`);
     return;
   }
@@ -96,17 +104,29 @@ async function processMessage(event) {
       getChannelInfo(event.channel)
     ]);
 
+    // Handle different message types
+    let messageText = event.text || '';
+
+    // For file_share messages with no text, use file name or placeholder
+    if (event.subtype === 'file_share' && !messageText && event.files && event.files.length > 0) {
+      const fileNames = event.files.map(f => f.name || f.title).join(', ');
+      messageText = `📎 Shared file(s): ${fileNames}`;
+    }
+
     // Create message object
     const message = {
       id: event.ts, // Slack timestamp is unique identifier
       channel,
       user,
-      text: event.text,
+      text: messageText,
       timestamp: new Date(parseFloat(event.ts) * 1000),
       metadata: {
         thread_ts: event.thread_ts || null,
+        parent_user_id: event.parent_user_id || null,
+        isThreadReply: !!event.thread_ts,
         hasAttachments: (event.files && event.files.length > 0) || false,
-        mentionsUser: event.text && event.text.includes(`<@${botUserId}>`)
+        mentionsUser: messageText && messageText.includes(`<@${botUserId}>`),
+        subtype: event.subtype || null
       },
       rawEvent: event // Store raw event for debugging
     };
@@ -114,8 +134,14 @@ async function processMessage(event) {
     console.log('\n📨 New message received:');
     console.log(`   From: ${user.real_name} (@${user.name})`);
     console.log(`   Channel: #${channel.name}`);
-    console.log(`   Text: ${event.text.substring(0, 100)}${event.text.length > 100 ? '...' : ''}`);
+    console.log(`   Text: ${messageText.substring(0, 100)}${messageText.length > 100 ? '...' : ''}`);
     console.log(`   Timestamp: ${message.timestamp.toISOString()}`);
+    if (message.metadata.isThreadReply) {
+      console.log(`   🧵 Thread reply (parent: ${event.parent_user_id})`);
+    }
+    if (event.subtype) {
+      console.log(`   Type: ${event.subtype}`);
+    }
 
     // Categorize message with AI
     console.log('🤖 Categorizing message...');
