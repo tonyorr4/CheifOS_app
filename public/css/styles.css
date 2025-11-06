@@ -308,6 +308,30 @@ body {
   color: white;
 }
 
+.btn-success:hover {
+  opacity: 0.9;
+}
+
+.btn-info {
+  background: #17a2b8;
+  color: white;
+  border: none;
+}
+
+.btn-info:hover {
+  background: #138496;
+}
+
+.btn-warning {
+  background: #ffc107;
+  color: #212529;
+  border: none;
+}
+
+.btn-warning:hover {
+  background: #e0a800;
+}
+
 /* ============================================
    EMPTY STATE
    ============================================ */
