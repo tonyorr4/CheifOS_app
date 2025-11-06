@@ -334,7 +334,7 @@ function escapeHtml(text) {
 
 /**
  * Format Slack message text (convert mentions, links, etc.)
- * @param {string} text - Raw Slack message text
+ * @param {string} text - Message text (already has resolved usernames from backend)
  * @returns {string} Formatted text
  */
 function formatSlackText(text) {
@@ -342,13 +342,13 @@ function formatSlackText(text) {
 
   let formatted = escapeHtml(text);
 
-  // Convert user mentions <@U12345> to @User
-  formatted = formatted.replace(/&lt;@([A-Z0-9]+)&gt;/g, '@User');
+  // Note: User mentions are already resolved by backend to @username format
+  // We just need to handle any remaining Slack formatting
 
-  // Convert channel mentions <#C12345|channel-name> to #channel-name
+  // Convert channel mentions <#C12345|channel-name> to #channel-name (if any remain)
   formatted = formatted.replace(/&lt;#[A-Z0-9]+\|([^&]+)&gt;/g, '#$1');
 
-  // Convert links <http://example.com|Example> to Example
+  // Convert links <http://example.com|Example> to clickable links
   formatted = formatted.replace(/&lt;(https?:\/\/[^|&]+)\|([^&]+)&gt;/g, '<a href="$1" target="_blank">$2</a>');
 
   // Convert bare links <http://example.com> to clickable links

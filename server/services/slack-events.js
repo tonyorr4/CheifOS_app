@@ -6,6 +6,7 @@
 const { slackClient, socketModeClient } = require('../config/slack');
 const { createMessage } = require('../models/message');
 const { categorizeWithAI } = require('./ai-categorizer');
+const { resolveUserMentions, extractUserIds } = require('./user-cache');
 
 // Store the bot's user ID to filter out bot messages
 let botUserId = null;
@@ -113,12 +114,17 @@ async function processMessage(event) {
       messageText = `📎 Shared file(s): ${fileNames}`;
     }
 
+    // Resolve user mentions to real names
+    const { resolvedText, userMap } = await resolveUserMentions(messageText);
+    const mentionedUserIds = extractUserIds(messageText);
+
     // Create message object
     const message = {
       id: event.ts, // Slack timestamp is unique identifier
       channel,
       user,
-      text: messageText,
+      text: resolvedText,  // Store resolved text with real usernames
+      originalText: messageText,  // Store original Slack-formatted text
       timestamp: new Date(parseFloat(event.ts) * 1000),
       metadata: {
         thread_ts: event.thread_ts || null,
@@ -126,6 +132,8 @@ async function processMessage(event) {
         isThreadReply: !!event.thread_ts,
         hasAttachments: (event.files && event.files.length > 0) || false,
         mentionsUser: messageText && messageText.includes(`<@${botUserId}>`),
+        mentionedUsers: userMap,  // Store map of mentioned user IDs to names
+        mentionedUserIds: mentionedUserIds,  // Store array of user IDs mentioned
         subtype: event.subtype || null
       },
       rawEvent: event // Store raw event for debugging
@@ -134,10 +142,14 @@ async function processMessage(event) {
     console.log('\n📨 New message received:');
     console.log(`   From: ${user.real_name} (@${user.name})`);
     console.log(`   Channel: #${channel.name}`);
-    console.log(`   Text: ${messageText.substring(0, 100)}${messageText.length > 100 ? '...' : ''}`);
+    console.log(`   Text: ${resolvedText.substring(0, 100)}${resolvedText.length > 100 ? '...' : ''}`);
     console.log(`   Timestamp: ${message.timestamp.toISOString()}`);
     if (message.metadata.isThreadReply) {
       console.log(`   🧵 Thread reply (parent: ${event.parent_user_id})`);
+    }
+    if (mentionedUserIds.length > 0) {
+      const mentionedNames = mentionedUserIds.map(id => userMap[id]?.display_name || 'Unknown').join(', ');
+      console.log(`   👥 Mentions: ${mentionedNames}`);
     }
     if (event.subtype) {
       console.log(`   Type: ${event.subtype}`);
