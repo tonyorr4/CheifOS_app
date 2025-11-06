@@ -29,6 +29,8 @@ async function createMessage(messageData) {
       needsResponse: messageData.needsResponse || false,
       handled: messageData.handled || false,
       handledAt: messageData.handledAt || null,
+      deleted: messageData.deleted || false,
+      deletedAt: messageData.deletedAt || null,
       metadata: messageData.metadata || {},
       createdAt: new Date(),
       updatedAt: new Date()
@@ -67,6 +69,11 @@ async function getMessages(filters = {}) {
 
     if (filters.needsResponse !== undefined) {
       query = query.where('needsResponse', '==', filters.needsResponse);
+    }
+
+    // Filter out deleted messages by default (unless explicitly requested)
+    if (filters.includeDeleted !== true) {
+      query = query.where('deleted', '==', false);
     }
 
     // Order by timestamp descending (newest first)
@@ -169,6 +176,18 @@ async function toggleFlag(messageId, needsResponse) {
 }
 
 /**
+ * Soft delete a message (mark as deleted without removing from DB)
+ * @param {string} messageId - Message ID
+ * @returns {Promise<Object>} Updated message
+ */
+async function softDeleteMessage(messageId) {
+  return updateMessage(messageId, {
+    deleted: true,
+    deletedAt: new Date()
+  });
+}
+
+/**
  * Delete a message
  * @param {string} messageId - Message ID
  * @returns {Promise<boolean>} Success
@@ -222,6 +241,7 @@ module.exports = {
   updateMessage,
   markHandled,
   toggleFlag,
+  softDeleteMessage,
   deleteMessage,
   getStats
 };

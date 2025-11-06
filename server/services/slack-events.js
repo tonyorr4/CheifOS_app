@@ -4,7 +4,7 @@
  */
 
 const { slackClient, socketModeClient } = require('../config/slack');
-const { createMessage } = require('../models/message');
+const { createMessage, softDeleteMessage } = require('../models/message');
 const { categorizeWithAI } = require('./ai-categorizer');
 const { resolveUserMentions, extractUserIds } = require('./user-cache');
 
@@ -84,9 +84,27 @@ async function processMessage(event) {
     return;
   }
 
+  // Handle message deletion separately
+  if (event.subtype === 'message_deleted') {
+    try {
+      // The deleted_ts field contains the timestamp of the deleted message
+      const deletedMessageId = event.deleted_ts || event.previous_message?.ts;
+
+      if (deletedMessageId) {
+        console.log(`🗑️  Message deleted: ${deletedMessageId} in #${event.channel}`);
+        await softDeleteMessage(deletedMessageId);
+        console.log(`✅ Marked message as deleted in database`);
+      } else {
+        console.log('⚠️  Could not find message ID to delete');
+      }
+    } catch (error) {
+      console.error('Error handling message deletion:', error);
+    }
+    return;
+  }
+
   // Only ignore specific subtypes we don't want
   const ignoredSubtypes = [
-    'message_deleted',
     'message_changed',
     'bot_message',
     'channel_join',

@@ -53,11 +53,11 @@ async function loadMessages() {
  */
 function updateStats() {
   const stats = {
-    urgent: messages.filter(m => m.category === 'urgent' && !m.handled).length,
-    question: messages.filter(m => m.category === 'question' && !m.handled).length,
-    fyi: messages.filter(m => m.category === 'fyi' && !m.handled).length,
-    routine: messages.filter(m => m.category === 'routine' && !m.handled).length,
-    total: messages.filter(m => !m.handled).length
+    urgent: messages.filter(m => m.category === 'urgent' && !m.handled && !m.deleted).length,
+    question: messages.filter(m => m.category === 'question' && !m.handled && !m.deleted).length,
+    fyi: messages.filter(m => m.category === 'fyi' && !m.handled && !m.deleted).length,
+    routine: messages.filter(m => m.category === 'routine' && !m.handled && !m.deleted).length,
+    total: messages.filter(m => !m.handled && !m.deleted).length
   };
 
   // Update stat numbers
@@ -95,7 +95,7 @@ function renderAllMessages() {
  */
 function renderCategory(category) {
   const container = document.getElementById(`${category}-messages`);
-  const categoryMessages = messages.filter(m => m.category === category && !m.handled);
+  const categoryMessages = messages.filter(m => m.category === category && !m.handled && !m.deleted);
 
   if (categoryMessages.length === 0) {
     container.innerHTML = '<div class="empty-state">No messages in this category</div>';
