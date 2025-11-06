@@ -107,9 +107,23 @@ router.patch('/messages/:id/handle', async (req, res) => {
  */
 router.patch('/messages/:id/flag', async (req, res) => {
   try {
-    const needsResponse = req.body.needsResponse !== undefined
-      ? req.body.needsResponse
-      : true;
+    // If needsResponse is explicitly provided in body, use that value
+    // Otherwise, get current message and toggle its value
+    let needsResponse;
+
+    if (req.body.needsResponse !== undefined) {
+      needsResponse = req.body.needsResponse;
+    } else {
+      // Get current message and toggle
+      const currentMessage = await messageModel.getMessageById(req.params.id);
+      if (!currentMessage) {
+        return res.status(404).json({
+          success: false,
+          error: 'Message not found'
+        });
+      }
+      needsResponse = !currentMessage.needsResponse;
+    }
 
     const message = await messageModel.toggleFlag(req.params.id, needsResponse);
 

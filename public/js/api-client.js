@@ -77,7 +77,7 @@ const api = {
       }
 
       const data = await response.json();
-      return data.message;
+      return data.data;  // Fixed: was data.message (string), now data.data (message object)
     } catch (error) {
       console.error('Error marking message as handled:', error);
       throw error;
@@ -103,7 +103,7 @@ const api = {
       }
 
       const data = await response.json();
-      return data.message;
+      return data.data;  // Fixed: was data.message (string), now data.data (message object)
     } catch (error) {
       console.error('Error toggling flag:', error);
       throw error;
