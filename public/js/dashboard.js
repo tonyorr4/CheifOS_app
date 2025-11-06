@@ -613,16 +613,42 @@ async function toggleThread(messageId) {
         <div class="thread-header">
           <strong>Thread Conversation (${threadData.messageCount} messages)</strong>
         </div>
-        ${threadData.messages.map((msg, index) => `
-          <div class="thread-message ${msg.isParent ? 'thread-parent' : 'thread-reply'}">
-            <div class="thread-message-meta">
-              <span class="thread-message-author">${msg.isParent ? '📌 ' : '↳ '}${escapeHtml(msg.user || 'Unknown')}</span>
-              <span class="thread-message-time">${formatTime(msg.timestamp)}</span>
+        ${threadData.messages.map((msg, index) => {
+          // Render file attachments if present
+          let filesHtml = '';
+          if (msg.hasFiles && msg.files && msg.files.length > 0) {
+            filesHtml = `
+              <div class="thread-message-files">
+                <div class="thread-attachments-header">📎 ${msg.files.length} Attachment${msg.files.length > 1 ? 's' : ''}</div>
+                <div class="thread-attachments-list">
+                  ${msg.files.map(file => `
+                    <div class="thread-attachment-item">
+                      <span class="thread-attachment-icon">${getFileIcon(file.filetype)}</span>
+                      <a href="${escapeHtml(file.downloadUrl || file.url)}" target="_blank" class="thread-attachment-name" title="Click to download">
+                        ${escapeHtml(file.name)}
+                      </a>
+                      <span class="thread-attachment-meta">
+                        <span class="thread-attachment-type">${escapeHtml(file.filetype.toUpperCase())}</span>
+                        <span class="thread-attachment-size">${formatFileSize(file.size)}</span>
+                      </span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            `;
+          }
+
+          return `
+            <div class="thread-message ${msg.isParent ? 'thread-parent' : 'thread-reply'}">
+              <div class="thread-message-meta">
+                <span class="thread-message-author">${msg.isParent ? '📌 ' : '↳ '}${escapeHtml(msg.user || 'Unknown')}</span>
+                <span class="thread-message-time">${formatTime(msg.timestamp)}</span>
+              </div>
+              <div class="thread-message-text">${formatSlackText(msg.text)}</div>
+              ${filesHtml}
             </div>
-            <div class="thread-message-text">${formatSlackText(msg.text)}</div>
-            ${msg.hasFiles ? `<div class="thread-message-files">📎 ${msg.files.length} file(s) attached</div>` : ''}
-          </div>
-        `).join('')}
+          `;
+        }).join('')}
       </div>
     `;
 

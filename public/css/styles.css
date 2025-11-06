@@ -687,12 +687,82 @@ body {
 }
 
 .thread-message-files {
-  margin-top: 8px;
-  padding: 6px 10px;
+  margin-top: 10px;
+  padding: 10px;
   background: var(--bg-secondary);
-  border-radius: 4px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.thread-attachments-header {
+  font-weight: 600;
   font-size: 12px;
   color: var(--text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.thread-attachments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.thread-attachment-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: var(--bg-primary);
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.thread-attachment-item:hover {
+  border-color: var(--btn-primary);
+  transform: translateX(3px);
+}
+
+.thread-attachment-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.thread-attachment-name {
+  flex: 1;
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--btn-primary);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.thread-attachment-name:hover {
+  color: var(--btn-primary-hover);
+  text-decoration: underline;
+}
+
+.thread-attachment-meta {
+  display: flex;
+  gap: 8px;
+  font-size: 10px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.thread-attachment-type {
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.thread-attachment-size {
+  opacity: 0.8;
 }
 
 .thread-loading {

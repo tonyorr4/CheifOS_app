@@ -221,19 +221,51 @@ router.get('/messages/:id/thread', async (req, res) => {
     // Fetch thread replies from Slack
     const threadMessages = await getThreadReplies(channelId, threadTs);
 
+    // Import Slack client to fetch user info
+    const { slackClient } = require('../config/slack');
+
     // Process and resolve user mentions for each message
     const processedMessages = await Promise.all(
       threadMessages.map(async (msg) => {
         const { resolvedText } = await resolveUserMentions(msg.text || '');
+
+        // Fetch user information
+        let userName = msg.user;
+        try {
+          if (msg.user && slackClient) {
+            const userInfo = await slackClient.users.info({ user: msg.user });
+            userName = userInfo.user.real_name || userInfo.user.name || msg.user;
+          }
+        } catch (error) {
+          console.error(`Error fetching user info for ${msg.user}:`, error.message);
+        }
+
+        // Extract file information if present
+        let files = [];
+        if (msg.files && msg.files.length > 0) {
+          files = msg.files.map(file => ({
+            id: file.id,
+            name: file.name || file.title || 'Untitled',
+            title: file.title || file.name || 'Untitled',
+            mimetype: file.mimetype || 'unknown',
+            filetype: file.filetype || 'unknown',
+            size: file.size || 0,
+            url: file.url_private || file.permalink || null,
+            downloadUrl: file.url_private_download || file.url_private || null,
+            permalink: file.permalink || null
+          }));
+        }
+
         return {
           id: msg.ts,
-          user: msg.user,
+          user: userName,
+          userId: msg.user,
           text: resolvedText,
           originalText: msg.text,
           timestamp: new Date(parseFloat(msg.ts) * 1000),
           isParent: msg.ts === threadTs,
-          hasFiles: msg.files && msg.files.length > 0,
-          files: msg.files || []
+          hasFiles: files.length > 0,
+          files: files
         };
       })
     );
