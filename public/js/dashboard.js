@@ -112,7 +112,7 @@ function renderCategory(category) {
  */
 function renderMessage(msg) {
   const showDraftButton = msg.category === 'urgent' || msg.category === 'question';
-  const isThread = msg.metadata?.isThreadReply || false;
+  const isThread = msg.metadata?.isThreadReply || msg.metadata?.thread_ts || false;
   const hasAttachments = msg.metadata?.hasAttachments || false;
 
   return `
@@ -121,13 +121,15 @@ function renderMessage(msg) {
         <div class="message-meta">
           <span class="message-user">${escapeHtml(msg.user?.name || 'Unknown User')}</span>
           <span class="message-channel">#${escapeHtml(msg.channel?.name || 'unknown')}</span>
-          ${isThread ? '<span class="thread-indicator" title="Thread reply">🧵</span>' : ''}
+          ${isThread ? '<span class="thread-indicator" title="Part of a thread">🧵</span>' : ''}
           ${hasAttachments ? '<span class="attachment-indicator" title="Has attachments">📎</span>' : ''}
         </div>
         <span class="message-time">${formatTime(msg.timestamp)}</span>
       </div>
       <div class="message-text">${formatSlackText(msg.text)}</div>
+      ${isThread ? `<div id="thread-${msg.id}" class="thread-container" style="display: none;"></div>` : ''}
       <div class="message-actions">
+        ${isThread ? `<button class="btn btn-info" onclick="toggleThread('${msg.id}')" title="View full thread conversation">🧵 View Thread</button>` : ''}
         ${showDraftButton ? `<button class="btn btn-primary" onclick="openDraftModal('${msg.id}')" title="Generate an AI-powered draft response for this message">✏️ Draft Response</button>` : ''}
         <button class="btn btn-success" onclick="markHandled('${msg.id}')" title="Mark this message as handled - it will be removed from your active queue">✓ Mark Handled</button>
         <button class="btn btn-secondary" onclick="toggleFlag('${msg.id}')" title="${msg.needsResponse ? 'Remove flag - this message does not need a response' : 'Flag this message as needing a response'}">🚩 ${msg.needsResponse ? 'Unflag' : 'Flag'}</button>
@@ -495,6 +497,63 @@ async function recategorizeMessage(messageId, category) {
   }
 }
 
+/**
+ * Toggle thread display (expand/collapse)
+ * @param {string} messageId - Message ID
+ */
+async function toggleThread(messageId) {
+  const threadContainer = document.getElementById(`thread-${messageId}`);
+
+  if (!threadContainer) {
+    console.error('Thread container not found for message:', messageId);
+    return;
+  }
+
+  // If already visible, just hide it
+  if (threadContainer.style.display !== 'none') {
+    threadContainer.style.display = 'none';
+    return;
+  }
+
+  // Show loading state
+  threadContainer.style.display = 'block';
+  threadContainer.innerHTML = '<div class="thread-loading">Loading thread...</div>';
+
+  try {
+    // Fetch thread from API
+    const threadData = await api.getThread(messageId);
+
+    if (!threadData.success || !threadData.messages || threadData.messages.length === 0) {
+      threadContainer.innerHTML = '<div class="thread-error">No thread messages found</div>';
+      return;
+    }
+
+    // Render thread messages in waterfall format
+    const threadHtml = `
+      <div class="thread-messages">
+        <div class="thread-header">
+          <strong>Thread Conversation (${threadData.messageCount} messages)</strong>
+        </div>
+        ${threadData.messages.map((msg, index) => `
+          <div class="thread-message ${msg.isParent ? 'thread-parent' : 'thread-reply'}">
+            <div class="thread-message-meta">
+              <span class="thread-message-author">${msg.isParent ? '📌 ' : '↳ '}${escapeHtml(msg.user || 'Unknown')}</span>
+              <span class="thread-message-time">${formatTime(msg.timestamp)}</span>
+            </div>
+            <div class="thread-message-text">${formatSlackText(msg.text)}</div>
+            ${msg.hasFiles ? `<div class="thread-message-files">📎 ${msg.files.length} file(s) attached</div>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    threadContainer.innerHTML = threadHtml;
+  } catch (error) {
+    console.error('Error fetching thread:', error);
+    threadContainer.innerHTML = '<div class="thread-error">Failed to load thread. Please try again.</div>';
+  }
+}
+
 // Make functions available globally for onclick handlers
 window.markHandled = markHandled;
 window.toggleFlag = toggleFlag;
@@ -503,3 +562,4 @@ window.closeDraftModal = closeDraftModal;
 window.sendResponse = sendResponse;
 window.openRecategorizeModal = openRecategorizeModal;
 window.recategorizeMessage = recategorizeMessage;
+window.toggleThread = toggleThread;

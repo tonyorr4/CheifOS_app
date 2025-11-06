@@ -75,6 +75,24 @@ async function getChannelInfo(channelId) {
 }
 
 /**
+ * Fetch all replies in a thread from Slack
+ */
+async function getThreadReplies(channelId, threadTs) {
+  try {
+    const result = await slackClient.conversations.replies({
+      channel: channelId,
+      ts: threadTs,
+      inclusive: true  // Include the parent message
+    });
+
+    return result.messages || [];
+  } catch (error) {
+    console.error(`Error fetching thread ${threadTs} in channel ${channelId}:`, error.message);
+    return [];
+  }
+}
+
+/**
  * Process incoming message event
  */
 async function processMessage(event) {
@@ -273,5 +291,6 @@ module.exports = {
   setupEventListeners,
   processMessage,
   getUserInfo,
-  getChannelInfo
+  getChannelInfo,
+  getThreadReplies
 };

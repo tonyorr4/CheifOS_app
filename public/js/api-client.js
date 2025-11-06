@@ -139,6 +139,27 @@ const api = {
   },
 
   /**
+   * Get thread messages (parent + all replies)
+   * @param {string} messageId - Message ID (can be parent or any reply)
+   * @returns {Promise<Object>} Thread object with all messages
+   */
+  async getThread(messageId) {
+    try {
+      const response = await fetch(`${API_BASE}/messages/${messageId}/thread`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching thread:', error);
+      throw error;
+    }
+  },
+
+  /**
    * Get message statistics
    * @returns {Promise<Object>} Stats object with counts
    */

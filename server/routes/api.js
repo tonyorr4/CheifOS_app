@@ -12,6 +12,8 @@ const kbModel = require('../models/knowledge-base');
 
 // Import services
 const { generateDraftResponse } = require('../services/ai-categorizer');
+const { getThreadReplies } = require('../services/slack-events');
+const { resolveUserMentions } = require('../services/user-cache');
 
 /**
  * P0 ENDPOINTS - Message Management
@@ -184,6 +186,69 @@ router.patch('/messages/:id/recategorize', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to recategorize message',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/messages/:id/thread
+ * Get all messages in a thread (parent + replies)
+ */
+router.get('/messages/:id/thread', async (req, res) => {
+  try {
+    // Get the message to find the channel and thread_ts
+    const message = await messageModel.getMessageById(req.params.id);
+
+    if (!message) {
+      return res.status(404).json({
+        success: false,
+        error: 'Message not found'
+      });
+    }
+
+    // Determine the thread timestamp (use thread_ts if it's a reply, otherwise use message id)
+    const threadTs = message.metadata?.thread_ts || message.id;
+    const channelId = message.channel?.id;
+
+    if (!channelId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Channel information not available'
+      });
+    }
+
+    // Fetch thread replies from Slack
+    const threadMessages = await getThreadReplies(channelId, threadTs);
+
+    // Process and resolve user mentions for each message
+    const processedMessages = await Promise.all(
+      threadMessages.map(async (msg) => {
+        const { resolvedText } = await resolveUserMentions(msg.text || '');
+        return {
+          id: msg.ts,
+          user: msg.user,
+          text: resolvedText,
+          originalText: msg.text,
+          timestamp: new Date(parseFloat(msg.ts) * 1000),
+          isParent: msg.ts === threadTs,
+          hasFiles: msg.files && msg.files.length > 0,
+          files: msg.files || []
+        };
+      })
+    );
+
+    res.json({
+      success: true,
+      threadTs: threadTs,
+      messageCount: processedMessages.length,
+      messages: processedMessages
+    });
+  } catch (error) {
+    console.error(`GET /api/messages/${req.params.id}/thread error:`, error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch thread',
       message: error.message
     });
   }

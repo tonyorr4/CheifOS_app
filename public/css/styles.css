@@ -508,3 +508,92 @@ body {
     width: 100%;
   }
 }
+
+/* ============================================
+   THREAD DISPLAY
+   ============================================ */
+.thread-container {
+  margin-top: 15px;
+  padding-left: 20px;
+  border-left: 3px solid var(--primary);
+}
+
+.thread-messages {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.thread-header {
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--border);
+  color: var(--text-primary);
+}
+
+.thread-message {
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  background: var(--bg-primary);
+  border-left: 3px solid transparent;
+}
+
+.thread-parent {
+  border-left-color: var(--primary);
+  background: var(--bg-hover);
+  font-weight: 500;
+}
+
+.thread-reply {
+  margin-left: 20px;
+  border-left-color: var(--text-secondary);
+}
+
+.thread-message-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.thread-message-author {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.thread-message-time {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.thread-message-text {
+  color: var(--text-primary);
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.thread-message-files {
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.thread-loading {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.thread-error {
+  padding: 15px;
+  background: var(--urgent-bg);
+  color: var(--urgent-text);
+  border-radius: 6px;
+  text-align: center;
+}
