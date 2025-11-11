@@ -659,6 +659,101 @@ async function toggleThread(messageId) {
   }
 }
 
+/**
+ * Mark all messages in a category as handled
+ * @param {string} category - Category name (urgent, question, fyi, routine)
+ */
+async function markAllHandled(category) {
+  const categoryMessages = messages.filter(m => m.category === category && !m.handled && !m.deleted);
+
+  if (categoryMessages.length === 0) {
+    alert(`No messages to mark as handled in ${category} category.`);
+    return;
+  }
+
+  const confirmed = confirm(`Mark all ${categoryMessages.length} message(s) in ${category} category as handled?`);
+  if (!confirmed) {
+    return;
+  }
+
+  console.log(`Marking ${categoryMessages.length} messages as handled in ${category} category...`);
+
+  try {
+    // Mark all messages as handled in parallel
+    await Promise.all(categoryMessages.map(msg => api.markHandled(msg.id)));
+
+    // Update local state
+    messages = messages.map(m =>
+      categoryMessages.find(cm => cm.id === m.id)
+        ? { ...m, handled: true, handledAt: new Date() }
+        : m
+    );
+
+    // Update UI
+    updateStats();
+    renderAllMessages();
+
+    console.log(`✓ All ${categoryMessages.length} messages in ${category} marked as handled`);
+  } catch (error) {
+    console.error('Error marking messages as handled:', error);
+    alert('Failed to mark all messages as handled. Please try again.');
+  }
+}
+
+/**
+ * Toggle collapse/expand state for a category
+ * @param {string} category - Category name
+ */
+function toggleCategory(category) {
+  const section = document.querySelector(`.category-section.${category}`);
+  const container = document.getElementById(`${category}-messages`);
+  const icon = section.querySelector('.collapse-icon');
+
+  if (container.style.display === 'none') {
+    // Expand
+    container.style.display = 'block';
+    icon.textContent = '▼';
+    section.classList.remove('collapsed');
+  } else {
+    // Collapse
+    container.style.display = 'none';
+    icon.textContent = '▶';
+    section.classList.add('collapsed');
+  }
+}
+
+/**
+ * Collapse all categories
+ */
+function collapseAllCategories() {
+  const categories = ['urgent', 'question', 'fyi', 'routine'];
+  categories.forEach(category => {
+    const section = document.querySelector(`.category-section.${category}`);
+    const container = document.getElementById(`${category}-messages`);
+    const icon = section.querySelector('.collapse-icon');
+
+    container.style.display = 'none';
+    icon.textContent = '▶';
+    section.classList.add('collapsed');
+  });
+}
+
+/**
+ * Expand all categories
+ */
+function expandAllCategories() {
+  const categories = ['urgent', 'question', 'fyi', 'routine'];
+  categories.forEach(category => {
+    const section = document.querySelector(`.category-section.${category}`);
+    const container = document.getElementById(`${category}-messages`);
+    const icon = section.querySelector('.collapse-icon');
+
+    container.style.display = 'block';
+    icon.textContent = '▼';
+    section.classList.remove('collapsed');
+  });
+}
+
 // Make functions available globally for onclick handlers
 window.markHandled = markHandled;
 window.toggleFlag = toggleFlag;
@@ -668,3 +763,7 @@ window.sendResponse = sendResponse;
 window.openRecategorizeModal = openRecategorizeModal;
 window.recategorizeMessage = recategorizeMessage;
 window.toggleThread = toggleThread;
+window.markAllHandled = markAllHandled;
+window.toggleCategory = toggleCategory;
+window.collapseAllCategories = collapseAllCategories;
+window.expandAllCategories = expandAllCategories;

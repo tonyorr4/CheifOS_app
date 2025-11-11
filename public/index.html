@@ -15,6 +15,10 @@
     <div class="header">
       <h1>CheifOS Dashboard</h1>
       <div class="header-actions">
+        <div class="category-controls">
+          <button class="btn btn-secondary" onclick="expandAllCategories()">▼ Expand All</button>
+          <button class="btn btn-secondary" onclick="collapseAllCategories()">▲ Collapse All</button>
+        </div>
         <a href="knowledge.html" class="kb-link">Knowledge Base</a>
         <div class="theme-switcher">
           <label>Theme:</label>
@@ -55,12 +59,16 @@
 
     <!-- URGENT CATEGORY -->
     <div class="category-section urgent">
-      <div class="category-header">
+      <div class="category-header" onclick="toggleCategory('urgent')">
         <div class="category-title">
+          <span class="collapse-icon">▼</span>
           <span class="icon">URGENT</span>
           Urgent
         </div>
-        <div class="category-count" id="count-urgent">0 messages</div>
+        <div class="category-actions">
+          <button class="btn btn-sm btn-handle-all" onclick="event.stopPropagation(); markAllHandled('urgent')" title="Mark all messages in this category as handled">✓ Mark All Handled</button>
+          <div class="category-count" id="count-urgent">0 messages</div>
+        </div>
       </div>
       <div class="messages-container" id="urgent-messages">
         <div class="loading">Loading urgent messages</div>
@@ -69,12 +77,16 @@
 
     <!-- QUESTIONS CATEGORY -->
     <div class="category-section question">
-      <div class="category-header">
+      <div class="category-header" onclick="toggleCategory('question')">
         <div class="category-title">
+          <span class="collapse-icon">▼</span>
           <span class="icon">Q</span>
           Questions
         </div>
-        <div class="category-count" id="count-question">0 messages</div>
+        <div class="category-actions">
+          <button class="btn btn-sm btn-handle-all" onclick="event.stopPropagation(); markAllHandled('question')" title="Mark all messages in this category as handled">✓ Mark All Handled</button>
+          <div class="category-count" id="count-question">0 messages</div>
+        </div>
       </div>
       <div class="messages-container" id="question-messages">
         <div class="loading">Loading questions</div>
@@ -83,12 +95,16 @@
 
     <!-- FYI CATEGORY -->
     <div class="category-section fyi">
-      <div class="category-header">
+      <div class="category-header" onclick="toggleCategory('fyi')">
         <div class="category-title">
+          <span class="collapse-icon">▼</span>
           <span class="icon">INFO</span>
           FYI
         </div>
-        <div class="category-count" id="count-fyi">0 messages</div>
+        <div class="category-actions">
+          <button class="btn btn-sm btn-handle-all" onclick="event.stopPropagation(); markAllHandled('fyi')" title="Mark all messages in this category as handled">✓ Mark All Handled</button>
+          <div class="category-count" id="count-fyi">0 messages</div>
+        </div>
       </div>
       <div class="messages-container" id="fyi-messages">
         <div class="loading">Loading FYI messages</div>
@@ -97,12 +113,16 @@
 
     <!-- ROUTINE CATEGORY -->
     <div class="category-section routine">
-      <div class="category-header">
+      <div class="category-header" onclick="toggleCategory('routine')">
         <div class="category-title">
+          <span class="collapse-icon">▼</span>
           <span class="icon">ROUTINE</span>
           Routine
         </div>
-        <div class="category-count" id="count-routine">0 messages</div>
+        <div class="category-actions">
+          <button class="btn btn-sm btn-handle-all" onclick="event.stopPropagation(); markAllHandled('routine')" title="Mark all messages in this category as handled">✓ Mark All Handled</button>
+          <div class="category-count" id="count-routine">0 messages</div>
+        </div>
       </div>
       <div class="messages-container" id="routine-messages">
         <div class="loading">Loading routine messages</div>
