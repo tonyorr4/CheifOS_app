@@ -57,75 +57,175 @@
       </div>
     </div>
 
-    <!-- URGENT CATEGORY -->
-    <div class="category-section urgent">
-      <div class="category-header" onclick="toggleCategory('urgent')">
-        <div class="category-title">
-          <span class="collapse-icon">▼</span>
-          <span class="icon">URGENT</span>
-          Urgent
+    <!-- MENTIONS HIGH-LEVEL BRANCH -->
+    <div class="high-level-branch">
+      <div class="branch-header" onclick="toggleBranch('mentions')">
+        <div class="branch-title">
+          <span class="branch-collapse-icon">▼</span>
+          <span class="branch-icon">@</span>
+          Mentions
         </div>
-        <div class="category-actions">
-          <button class="btn btn-sm btn-handle-all" onclick="event.stopPropagation(); markAllHandled('urgent')" title="Mark all messages in this category as handled">✓ Mark All Handled</button>
-          <div class="category-count" id="count-urgent">0 messages</div>
-        </div>
+        <div class="branch-count" id="mentions-total-count">0 messages</div>
       </div>
-      <div class="messages-container" id="urgent-messages">
-        <div class="loading">Loading urgent messages</div>
+
+      <div class="branch-content" id="mentions-content">
+        <!-- URGENT CATEGORY -->
+        <div class="category-section urgent">
+          <div class="category-header" onclick="event.stopPropagation(); toggleCategory('mentions', 'urgent')">
+            <div class="category-title">
+              <span class="collapse-icon">▼</span>
+              <span class="icon">🚨</span>
+              Urgent
+            </div>
+            <div class="category-actions">
+              <button class="btn btn-sm btn-handle-all" onclick="event.stopPropagation(); markAllHandled('mentions', 'urgent')" title="Mark all messages in this category as handled">✓ Mark All Handled</button>
+              <div class="category-count" id="mentions-urgent-count">0 messages</div>
+            </div>
+          </div>
+          <div class="messages-container" id="mentions-urgent-messages">
+            <div class="loading">Loading urgent messages</div>
+          </div>
+        </div>
+
+        <!-- QUESTIONS CATEGORY -->
+        <div class="category-section question">
+          <div class="category-header" onclick="event.stopPropagation(); toggleCategory('mentions', 'question')">
+            <div class="category-title">
+              <span class="collapse-icon">▼</span>
+              <span class="icon">❓</span>
+              Questions
+            </div>
+            <div class="category-actions">
+              <button class="btn btn-sm btn-handle-all" onclick="event.stopPropagation(); markAllHandled('mentions', 'question')" title="Mark all messages in this category as handled">✓ Mark All Handled</button>
+              <div class="category-count" id="mentions-question-count">0 messages</div>
+            </div>
+          </div>
+          <div class="messages-container" id="mentions-question-messages">
+            <div class="loading">Loading questions</div>
+          </div>
+        </div>
+
+        <!-- FYI CATEGORY -->
+        <div class="category-section fyi">
+          <div class="category-header" onclick="event.stopPropagation(); toggleCategory('mentions', 'fyi')">
+            <div class="category-title">
+              <span class="collapse-icon">▼</span>
+              <span class="icon">ℹ️</span>
+              FYI
+            </div>
+            <div class="category-actions">
+              <button class="btn btn-sm btn-handle-all" onclick="event.stopPropagation(); markAllHandled('mentions', 'fyi')" title="Mark all messages in this category as handled">✓ Mark All Handled</button>
+              <div class="category-count" id="mentions-fyi-count">0 messages</div>
+            </div>
+          </div>
+          <div class="messages-container" id="mentions-fyi-messages">
+            <div class="loading">Loading FYI messages</div>
+          </div>
+        </div>
+
+        <!-- ROUTINE CATEGORY -->
+        <div class="category-section routine">
+          <div class="category-header" onclick="event.stopPropagation(); toggleCategory('mentions', 'routine')">
+            <div class="category-title">
+              <span class="collapse-icon">▼</span>
+              <span class="icon">📋</span>
+              Routine
+            </div>
+            <div class="category-actions">
+              <button class="btn btn-sm btn-handle-all" onclick="event.stopPropagation(); markAllHandled('mentions', 'routine')" title="Mark all messages in this category as handled">✓ Mark All Handled</button>
+              <div class="category-count" id="mentions-routine-count">0 messages</div>
+            </div>
+          </div>
+          <div class="messages-container" id="mentions-routine-messages">
+            <div class="loading">Loading routine messages</div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- QUESTIONS CATEGORY -->
-    <div class="category-section question">
-      <div class="category-header" onclick="toggleCategory('question')">
-        <div class="category-title">
-          <span class="collapse-icon">▼</span>
-          <span class="icon">Q</span>
-          Questions
+    <!-- OTHER MESSAGES HIGH-LEVEL BRANCH -->
+    <div class="high-level-branch">
+      <div class="branch-header" onclick="toggleBranch('other')">
+        <div class="branch-title">
+          <span class="branch-collapse-icon">▼</span>
+          <span class="branch-icon">📬</span>
+          Other Messages
         </div>
-        <div class="category-actions">
-          <button class="btn btn-sm btn-handle-all" onclick="event.stopPropagation(); markAllHandled('question')" title="Mark all messages in this category as handled">✓ Mark All Handled</button>
-          <div class="category-count" id="count-question">0 messages</div>
-        </div>
+        <div class="branch-count" id="other-total-count">0 messages</div>
       </div>
-      <div class="messages-container" id="question-messages">
-        <div class="loading">Loading questions</div>
-      </div>
-    </div>
 
-    <!-- FYI CATEGORY -->
-    <div class="category-section fyi">
-      <div class="category-header" onclick="toggleCategory('fyi')">
-        <div class="category-title">
-          <span class="collapse-icon">▼</span>
-          <span class="icon">INFO</span>
-          FYI
+      <div class="branch-content" id="other-content">
+        <!-- URGENT CATEGORY -->
+        <div class="category-section urgent">
+          <div class="category-header" onclick="event.stopPropagation(); toggleCategory('other', 'urgent')">
+            <div class="category-title">
+              <span class="collapse-icon">▼</span>
+              <span class="icon">🚨</span>
+              Urgent
+            </div>
+            <div class="category-actions">
+              <button class="btn btn-sm btn-handle-all" onclick="event.stopPropagation(); markAllHandled('other', 'urgent')" title="Mark all messages in this category as handled">✓ Mark All Handled</button>
+              <div class="category-count" id="other-urgent-count">0 messages</div>
+            </div>
+          </div>
+          <div class="messages-container" id="other-urgent-messages">
+            <div class="loading">Loading urgent messages</div>
+          </div>
         </div>
-        <div class="category-actions">
-          <button class="btn btn-sm btn-handle-all" onclick="event.stopPropagation(); markAllHandled('fyi')" title="Mark all messages in this category as handled">✓ Mark All Handled</button>
-          <div class="category-count" id="count-fyi">0 messages</div>
-        </div>
-      </div>
-      <div class="messages-container" id="fyi-messages">
-        <div class="loading">Loading FYI messages</div>
-      </div>
-    </div>
 
-    <!-- ROUTINE CATEGORY -->
-    <div class="category-section routine">
-      <div class="category-header" onclick="toggleCategory('routine')">
-        <div class="category-title">
-          <span class="collapse-icon">▼</span>
-          <span class="icon">ROUTINE</span>
-          Routine
+        <!-- QUESTIONS CATEGORY -->
+        <div class="category-section question">
+          <div class="category-header" onclick="event.stopPropagation(); toggleCategory('other', 'question')">
+            <div class="category-title">
+              <span class="collapse-icon">▼</span>
+              <span class="icon">❓</span>
+              Questions
+            </div>
+            <div class="category-actions">
+              <button class="btn btn-sm btn-handle-all" onclick="event.stopPropagation(); markAllHandled('other', 'question')" title="Mark all messages in this category as handled">✓ Mark All Handled</button>
+              <div class="category-count" id="other-question-count">0 messages</div>
+            </div>
+          </div>
+          <div class="messages-container" id="other-question-messages">
+            <div class="loading">Loading questions</div>
+          </div>
         </div>
-        <div class="category-actions">
-          <button class="btn btn-sm btn-handle-all" onclick="event.stopPropagation(); markAllHandled('routine')" title="Mark all messages in this category as handled">✓ Mark All Handled</button>
-          <div class="category-count" id="count-routine">0 messages</div>
+
+        <!-- FYI CATEGORY -->
+        <div class="category-section fyi">
+          <div class="category-header" onclick="event.stopPropagation(); toggleCategory('other', 'fyi')">
+            <div class="category-title">
+              <span class="collapse-icon">▼</span>
+              <span class="icon">ℹ️</span>
+              FYI
+            </div>
+            <div class="category-actions">
+              <button class="btn btn-sm btn-handle-all" onclick="event.stopPropagation(); markAllHandled('other', 'fyi')" title="Mark all messages in this category as handled">✓ Mark All Handled</button>
+              <div class="category-count" id="other-fyi-count">0 messages</div>
+            </div>
+          </div>
+          <div class="messages-container" id="other-fyi-messages">
+            <div class="loading">Loading FYI messages</div>
+          </div>
         </div>
-      </div>
-      <div class="messages-container" id="routine-messages">
-        <div class="loading">Loading routine messages</div>
+
+        <!-- ROUTINE CATEGORY -->
+        <div class="category-section routine">
+          <div class="category-header" onclick="event.stopPropagation(); toggleCategory('other', 'routine')">
+            <div class="category-title">
+              <span class="collapse-icon">▼</span>
+              <span class="icon">📋</span>
+              Routine
+            </div>
+            <div class="category-actions">
+              <button class="btn btn-sm btn-handle-all" onclick="event.stopPropagation(); markAllHandled('other', 'routine')" title="Mark all messages in this category as handled">✓ Mark All Handled</button>
+              <div class="category-count" id="other-routine-count">0 messages</div>
+            </div>
+          </div>
+          <div class="messages-container" id="other-routine-messages">
+            <div class="loading">Loading routine messages</div>
+          </div>
+        </div>
       </div>
     </div>
 

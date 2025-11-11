@@ -52,50 +52,97 @@ async function loadMessages() {
  * Update stats section with message counts
  */
 function updateStats() {
+  const activeMessages = messages.filter(m => !m.handled && !m.deleted);
+
+  // Separate messages by mention status
+  const mentionMessages = activeMessages.filter(m => m.metadata?.mentionsUser === true);
+  const otherMessages = activeMessages.filter(m => m.metadata?.mentionsUser !== true);
+
   const stats = {
-    urgent: messages.filter(m => m.category === 'urgent' && !m.handled && !m.deleted).length,
-    question: messages.filter(m => m.category === 'question' && !m.handled && !m.deleted).length,
-    fyi: messages.filter(m => m.category === 'fyi' && !m.handled && !m.deleted).length,
-    routine: messages.filter(m => m.category === 'routine' && !m.handled && !m.deleted).length,
-    total: messages.filter(m => !m.handled && !m.deleted).length
+    urgent: activeMessages.filter(m => m.category === 'urgent').length,
+    question: activeMessages.filter(m => m.category === 'question').length,
+    fyi: activeMessages.filter(m => m.category === 'fyi').length,
+    routine: activeMessages.filter(m => m.category === 'routine').length,
+    total: activeMessages.length
   };
 
-  // Update stat numbers
+  // Update main stat numbers
   document.getElementById('stat-urgent').textContent = stats.urgent;
   document.getElementById('stat-question').textContent = stats.question;
   document.getElementById('stat-fyi').textContent = stats.fyi;
   document.getElementById('stat-routine').textContent = stats.routine;
   document.getElementById('stat-total').textContent = stats.total;
 
-  // Update category counts (using correct IDs from updated HTML)
-  const urgentCountEl = document.getElementById('urgent-count') || document.getElementById('count-urgent');
-  const questionCountEl = document.getElementById('question-count') || document.getElementById('count-question');
-  const fyiCountEl = document.getElementById('fyi-count') || document.getElementById('count-fyi');
-  const routineCountEl = document.getElementById('routine-count') || document.getElementById('count-routine');
+  // Update branch totals
+  const mentionsTotal = mentionMessages.length;
+  const otherTotal = otherMessages.length;
+  document.getElementById('mentions-total-count').textContent = `${mentionsTotal} message${mentionsTotal !== 1 ? 's' : ''}`;
+  document.getElementById('other-total-count').textContent = `${otherTotal} message${otherTotal !== 1 ? 's' : ''}`;
 
-  if (urgentCountEl) urgentCountEl.textContent = `${stats.urgent} message${stats.urgent !== 1 ? 's' : ''}`;
-  if (questionCountEl) questionCountEl.textContent = `${stats.question} message${stats.question !== 1 ? 's' : ''}`;
-  if (fyiCountEl) fyiCountEl.textContent = `${stats.fyi} message${stats.fyi !== 1 ? 's' : ''}`;
-  if (routineCountEl) routineCountEl.textContent = `${stats.routine} message${stats.routine !== 1 ? 's' : ''}`;
+  // Update mentions category counts
+  const mentionsStats = {
+    urgent: mentionMessages.filter(m => m.category === 'urgent').length,
+    question: mentionMessages.filter(m => m.category === 'question').length,
+    fyi: mentionMessages.filter(m => m.category === 'fyi').length,
+    routine: mentionMessages.filter(m => m.category === 'routine').length
+  };
+
+  document.getElementById('mentions-urgent-count').textContent = `${mentionsStats.urgent} message${mentionsStats.urgent !== 1 ? 's' : ''}`;
+  document.getElementById('mentions-question-count').textContent = `${mentionsStats.question} message${mentionsStats.question !== 1 ? 's' : ''}`;
+  document.getElementById('mentions-fyi-count').textContent = `${mentionsStats.fyi} message${mentionsStats.fyi !== 1 ? 's' : ''}`;
+  document.getElementById('mentions-routine-count').textContent = `${mentionsStats.routine} message${mentionsStats.routine !== 1 ? 's' : ''}`;
+
+  // Update other messages category counts
+  const otherStats = {
+    urgent: otherMessages.filter(m => m.category === 'urgent').length,
+    question: otherMessages.filter(m => m.category === 'question').length,
+    fyi: otherMessages.filter(m => m.category === 'fyi').length,
+    routine: otherMessages.filter(m => m.category === 'routine').length
+  };
+
+  document.getElementById('other-urgent-count').textContent = `${otherStats.urgent} message${otherStats.urgent !== 1 ? 's' : ''}`;
+  document.getElementById('other-question-count').textContent = `${otherStats.question} message${otherStats.question !== 1 ? 's' : ''}`;
+  document.getElementById('other-fyi-count').textContent = `${otherStats.fyi} message${otherStats.fyi !== 1 ? 's' : ''}`;
+  document.getElementById('other-routine-count').textContent = `${otherStats.routine} message${otherStats.routine !== 1 ? 's' : ''}`;
 }
 
 /**
  * Render all messages in their respective categories
  */
 function renderAllMessages() {
-  renderCategory('urgent');
-  renderCategory('question');
-  renderCategory('fyi');
-  renderCategory('routine');
+  const categories = ['urgent', 'question', 'fyi', 'routine'];
+  categories.forEach(category => {
+    renderCategory('mentions', category);
+    renderCategory('other', category);
+  });
 }
 
 /**
- * Render messages for a specific category
- * @param {string} category - Category name
+ * Render messages for a specific branch and category
+ * @param {string} branch - Branch name (mentions or other)
+ * @param {string} category - Category name (urgent, question, fyi, routine)
  */
-function renderCategory(category) {
-  const container = document.getElementById(`${category}-messages`);
-  const categoryMessages = messages.filter(m => m.category === category && !m.handled && !m.deleted);
+function renderCategory(branch, category) {
+  const container = document.getElementById(`${branch}-${category}-messages`);
+  if (!container) {
+    console.warn(`Container not found: ${branch}-${category}-messages`);
+    return;
+  }
+
+  // Filter messages by branch (mentions vs other)
+  const branchMessages = messages.filter(m => {
+    if (!m.handled && !m.deleted) {
+      if (branch === 'mentions') {
+        return m.metadata?.mentionsUser === true;
+      } else {
+        return m.metadata?.mentionsUser !== true;
+      }
+    }
+    return false;
+  });
+
+  // Further filter by category
+  const categoryMessages = branchMessages.filter(m => m.category === category);
 
   if (categoryMessages.length === 0) {
     container.innerHTML = '<div class="empty-state">No messages in this category</div>';
@@ -660,23 +707,38 @@ async function toggleThread(messageId) {
 }
 
 /**
- * Mark all messages in a category as handled
+ * Mark all messages in a branch + category as handled
+ * @param {string} branch - Branch name (mentions or other)
  * @param {string} category - Category name (urgent, question, fyi, routine)
  */
-async function markAllHandled(category) {
-  const categoryMessages = messages.filter(m => m.category === category && !m.handled && !m.deleted);
+async function markAllHandled(branch, category) {
+  // Filter by branch
+  const branchMessages = messages.filter(m => {
+    if (!m.handled && !m.deleted) {
+      if (branch === 'mentions') {
+        return m.metadata?.mentionsUser === true;
+      } else {
+        return m.metadata?.mentionsUser !== true;
+      }
+    }
+    return false;
+  });
+
+  // Further filter by category
+  const categoryMessages = branchMessages.filter(m => m.category === category);
 
   if (categoryMessages.length === 0) {
-    alert(`No messages to mark as handled in ${category} category.`);
+    alert(`No messages to mark as handled in ${branch} ${category} category.`);
     return;
   }
 
-  const confirmed = confirm(`Mark all ${categoryMessages.length} message(s) in ${category} category as handled?`);
+  const branchLabel = branch === 'mentions' ? 'Mentions' : 'Other Messages';
+  const confirmed = confirm(`Mark all ${categoryMessages.length} message(s) in ${branchLabel} > ${category} category as handled?`);
   if (!confirmed) {
     return;
   }
 
-  console.log(`Marking ${categoryMessages.length} messages as handled in ${category} category...`);
+  console.log(`Marking ${categoryMessages.length} messages as handled in ${branch} ${category} category...`);
 
   try {
     // Mark all messages as handled in parallel
@@ -693,7 +755,7 @@ async function markAllHandled(category) {
     updateStats();
     renderAllMessages();
 
-    console.log(`✓ All ${categoryMessages.length} messages in ${category} marked as handled`);
+    console.log(`✓ All ${categoryMessages.length} messages in ${branch} ${category} marked as handled`);
   } catch (error) {
     console.error('Error marking messages as handled:', error);
     alert('Failed to mark all messages as handled. Please try again.');
@@ -701,56 +763,126 @@ async function markAllHandled(category) {
 }
 
 /**
- * Toggle collapse/expand state for a category
+ * Toggle collapse/expand state for a branch
+ * @param {string} branch - Branch name (mentions or other)
+ */
+function toggleBranch(branch) {
+  const content = document.getElementById(`${branch}-content`);
+  const branchHeader = content.previousElementSibling;
+  const icon = branchHeader.querySelector('.branch-collapse-icon');
+
+  if (content.style.display === 'none') {
+    // Expand
+    content.style.display = 'block';
+    icon.textContent = '▼';
+  } else {
+    // Collapse
+    content.style.display = 'none';
+    icon.textContent = '▶';
+  }
+}
+
+/**
+ * Toggle collapse/expand state for a category within a branch
+ * @param {string} branch - Branch name (mentions or other)
  * @param {string} category - Category name
  */
-function toggleCategory(category) {
-  const section = document.querySelector(`.category-section.${category}`);
-  const container = document.getElementById(`${category}-messages`);
-  const icon = section.querySelector('.collapse-icon');
+function toggleCategory(branch, category) {
+  const container = document.getElementById(`${branch}-${category}-messages`);
+  const branchContent = document.getElementById(`${branch}-content`);
+
+  // Find the category section within the branch
+  const categorySection = Array.from(branchContent.querySelectorAll('.category-section')).find(
+    section => section.classList.contains(category)
+  );
+
+  if (!categorySection) {
+    console.warn(`Category section not found: ${branch} ${category}`);
+    return;
+  }
+
+  const icon = categorySection.querySelector('.collapse-icon');
 
   if (container.style.display === 'none') {
     // Expand
     container.style.display = 'block';
     icon.textContent = '▼';
-    section.classList.remove('collapsed');
+    categorySection.classList.remove('collapsed');
   } else {
     // Collapse
     container.style.display = 'none';
     icon.textContent = '▶';
-    section.classList.add('collapsed');
+    categorySection.classList.add('collapsed');
   }
 }
 
 /**
- * Collapse all categories
+ * Collapse all branches and categories
  */
 function collapseAllCategories() {
+  const branches = ['mentions', 'other'];
   const categories = ['urgent', 'question', 'fyi', 'routine'];
-  categories.forEach(category => {
-    const section = document.querySelector(`.category-section.${category}`);
-    const container = document.getElementById(`${category}-messages`);
-    const icon = section.querySelector('.collapse-icon');
 
-    container.style.display = 'none';
+  // Collapse branches
+  branches.forEach(branch => {
+    const content = document.getElementById(`${branch}-content`);
+    const branchHeader = content.previousElementSibling;
+    const icon = branchHeader.querySelector('.branch-collapse-icon');
+    content.style.display = 'none';
     icon.textContent = '▶';
-    section.classList.add('collapsed');
+  });
+
+  // Collapse all categories within branches
+  branches.forEach(branch => {
+    categories.forEach(category => {
+      const container = document.getElementById(`${branch}-${category}-messages`);
+      const branchContent = document.getElementById(`${branch}-content`);
+      const categorySection = Array.from(branchContent.querySelectorAll('.category-section')).find(
+        section => section.classList.contains(category)
+      );
+
+      if (categorySection && container) {
+        const icon = categorySection.querySelector('.collapse-icon');
+        container.style.display = 'none';
+        icon.textContent = '▶';
+        categorySection.classList.add('collapsed');
+      }
+    });
   });
 }
 
 /**
- * Expand all categories
+ * Expand all branches and categories
  */
 function expandAllCategories() {
+  const branches = ['mentions', 'other'];
   const categories = ['urgent', 'question', 'fyi', 'routine'];
-  categories.forEach(category => {
-    const section = document.querySelector(`.category-section.${category}`);
-    const container = document.getElementById(`${category}-messages`);
-    const icon = section.querySelector('.collapse-icon');
 
-    container.style.display = 'block';
+  // Expand branches
+  branches.forEach(branch => {
+    const content = document.getElementById(`${branch}-content`);
+    const branchHeader = content.previousElementSibling;
+    const icon = branchHeader.querySelector('.branch-collapse-icon');
+    content.style.display = 'block';
     icon.textContent = '▼';
-    section.classList.remove('collapsed');
+  });
+
+  // Expand all categories within branches
+  branches.forEach(branch => {
+    categories.forEach(category => {
+      const container = document.getElementById(`${branch}-${category}-messages`);
+      const branchContent = document.getElementById(`${branch}-content`);
+      const categorySection = Array.from(branchContent.querySelectorAll('.category-section')).find(
+        section => section.classList.contains(category)
+      );
+
+      if (categorySection && container) {
+        const icon = categorySection.querySelector('.collapse-icon');
+        container.style.display = 'block';
+        icon.textContent = '▼';
+        categorySection.classList.remove('collapsed');
+      }
+    });
   });
 }
 
@@ -764,6 +896,7 @@ window.openRecategorizeModal = openRecategorizeModal;
 window.recategorizeMessage = recategorizeMessage;
 window.toggleThread = toggleThread;
 window.markAllHandled = markAllHandled;
+window.toggleBranch = toggleBranch;
 window.toggleCategory = toggleCategory;
 window.collapseAllCategories = collapseAllCategories;
 window.expandAllCategories = expandAllCategories;

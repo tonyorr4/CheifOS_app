@@ -146,15 +146,79 @@ body {
 .stat-item.routine .stat-number { color: var(--routine-text); }
 
 /* ============================================
-   CATEGORY SECTIONS
+   HIGH-LEVEL BRANCHES
    ============================================ */
-.category-section {
+.high-level-branch {
   margin-bottom: 30px;
   background: var(--bg-secondary);
   border-radius: 12px;
   padding: 20px;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+}
+
+.branch-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+  padding: 15px;
+  margin: -10px -10px 20px -10px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+}
+
+.branch-header:hover {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+}
+
+.branch-title {
+  font-size: 24px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-primary);
+}
+
+.branch-icon {
+  font-size: 28px;
+}
+
+.branch-collapse-icon {
+  font-size: 20px;
+  transition: transform 0.2s ease;
+  color: var(--text-secondary);
+}
+
+.branch-count {
+  background: var(--btn-primary);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.branch-content {
+  padding-top: 10px;
+}
+
+/* ============================================
+   CATEGORY SECTIONS
+   ============================================ */
+.category-section {
+  margin-bottom: 20px;
+  background: var(--bg-primary);
+  border-radius: 10px;
+  padding: 15px;
   border: 1px solid var(--border-color);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .category-section.urgent {
